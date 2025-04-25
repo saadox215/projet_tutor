@@ -10,6 +10,9 @@ public class ProjetTutoApplication {
 
     public static void main(String[] args) {
         SpringApplication.run(ProjetTutoApplication.class, args);
+        PasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
+        String rawPassword = passwordEncoder.encode("1234");
+        System.out.println("Encoded password: " + rawPassword);
     }
 
 }

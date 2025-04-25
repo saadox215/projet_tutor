@@ -11,7 +11,7 @@ public class Utilisateur {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    private String nom;
+    private String name;
     private String prenom;
     @Column(unique = true, nullable = false)
     private String email;
@@ -28,12 +28,12 @@ public class Utilisateur {
         this.id = id;
     }
 
-    public String getNom() {
-        return nom;
+    public String getName() {
+        return name;
     }
 
-    public void setNom(String nom) {
-        this.nom = nom;
+    public void setName(String nom) {
+        this.name = nom;
     }
 
     public String getPrenom() {
@@ -86,7 +86,7 @@ public class Utilisateur {
 
     public Utilisateur(Long id, String nom, String prenom, String email, String password, boolean actif, Set<Role> roles, Classe classe) {
         this.id = id;
-        this.nom = nom;
+        this.name = nom;
         this.prenom = prenom;
         this.email = email;
         this.password = password;
@@ -106,9 +106,19 @@ public class Utilisateur {
     )
     private Set<Role> roles;
 
+    public Set<Classe> getClassesEnseignees() {
+        return classesEnseignees;
+    }
+
+    public void setClassesEnseignees(Set<Classe> classesEnseignees) {
+        this.classesEnseignees = classesEnseignees;
+    }
 
     @ManyToOne
     @JoinColumn(name = "classe_id")
     private Classe classe;
+
+    @OneToMany(mappedBy = "enseignant")
+    private Set<Classe> classesEnseignees;
 }
 
