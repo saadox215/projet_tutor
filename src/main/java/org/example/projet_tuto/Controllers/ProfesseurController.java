@@ -5,6 +5,7 @@ import org.example.projet_tuto.Exception.AnnonceExceptionHandler;
 import org.example.projet_tuto.Exception.QcmNotFoundException;
 import org.example.projet_tuto.Exception.StreamingNotFoundException;
 import org.example.projet_tuto.Repository.LiveStreamingRepository;
+import org.example.projet_tuto.Service.ProfesseurService;
 import org.example.projet_tuto.Service.ProfesseurServices;
 import org.example.projet_tuto.Service.ZoomService;
 import org.example.projet_tuto.entities.Annonce;
@@ -24,43 +25,14 @@ import java.util.Optional;
 @RestController
 @RequestMapping("/api/prof")
 public class ProfesseurController {
-    private final ProfesseurServices professeurServices;
+    private final ProfesseurService professeurService;
     private final ZoomService zoomService;
-    private final LiveStreamingRepository liveStreamingRepository;
 
-    public ProfesseurController(ProfesseurServices professeurServices, ZoomService zoomService, LiveStreamingRepository liveStreamingRepository) {
-        this.professeurServices = professeurServices;
+
+    public ProfesseurController(ProfesseurService professeurService,
+                                ZoomService zoomService) {
+        this.professeurService = professeurService;
         this.zoomService = zoomService;
-        this.liveStreamingRepository = liveStreamingRepository;
-    }
-    @GetMapping("/annonce/create")
-    public ResponseEntity<?> createAnnonce(@RequestBody Annonce annonce) {
-        professeurServices.createAnnonce(annonce);
-        return new ResponseEntity<>(HttpStatus.CREATED);
-    }
-    @PostMapping("/annonce/info")
-    public ResponseEntity<?> updateAnnonce(@RequestBody Annonce annonce) {
-        try {
-            professeurServices.modifierAnnonce(annonce);
-            return new ResponseEntity<>(HttpStatus.OK);
-        }catch (AnnonceExceptionHandler e) {
-            return new ResponseEntity<>(e.getMessage(), HttpStatus.BAD_REQUEST);
-        }catch (Exception e) {
-            return new ResponseEntity<>(e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
-        }
-
-    }
-    @DeleteMapping("/annoce/delete/{IdAnnoce}")
-    public ResponseEntity<?> deleteAnnonce(@PathVariable Long IdAnnoce) {
-        try {
-            professeurServices.deleteAnnonce(IdAnnoce);
-            return new ResponseEntity<>(HttpStatus.OK);
-        }catch(AnnonceExceptionHandler ex){
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(ex.getMessage());
-        }catch(Exception ex){
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(ex.getMessage());
-        }
-
     }
 
     @PostMapping("/livestreaming")
@@ -82,7 +54,7 @@ public class ProfesseurController {
 
             liveStreaming.setMeetingURL(joinUrl);
             liveStreaming.setZoomMeetingId(zoomMeetingId);
-            professeurServices.createLiveStreaming(liveStreaming);
+            professeurService.createLiveStreaming(liveStreaming);
 
             return ResponseEntity.ok(joinUrl);
         } catch (WebClientResponseException e) {
@@ -102,7 +74,7 @@ public class ProfesseurController {
         }
 
         try {
-            LiveStreaming existing = professeurServices.findLiveStreamingById(id)
+            LiveStreaming existing = professeurService.findLiveStreamingById(id)
                     .orElseThrow(() -> new RuntimeException("LiveStreaming not found with ID: " + id));
 
             zoomService.updateMeeting(existing.getZoomMeetingId(), liveStreaming);
@@ -110,7 +82,7 @@ public class ProfesseurController {
 
             existing.setSujet(liveStreaming.getSujet());
             existing.setDateCreation(liveStreaming.getDateCreation());
-            professeurServices.updateLiveStreaming(existing);
+            professeurService.updateLiveStreaming(existing);
 
             return ResponseEntity.ok("Meeting updated successfully");
         } catch (WebClientResponseException e) {
@@ -128,12 +100,12 @@ public class ProfesseurController {
     public ResponseEntity<String> deleteLiveStreaming(@PathVariable Long id) {
         try {
 
-            LiveStreaming existing = professeurServices.findLiveStreamingById(id)
+            LiveStreaming existing = professeurService.findLiveStreamingById(id)
                     .orElseThrow(() -> new RuntimeException("LiveStreaming not found with ID: " + id));
 
             zoomService.deleteMeeting(existing.getZoomMeetingId());
 
-            professeurServices.deleteLiveStreaming(id);
+            professeurService.deleteLiveStreaming(id);
 
             return ResponseEntity.ok("Meeting deleted successfully");
         } catch (WebClientResponseException e) {
@@ -145,33 +117,33 @@ public class ProfesseurController {
             return ResponseEntity.badRequest().body("Error deleting meeting: " + e.getMessage());
         }
     }
-    @GetMapping("Evaluation/Qcm/create")
-    public ResponseEntity<?> createQcm(@RequestBody QCM qcm) {
-        professeurServices.createQCM(qcm);
-        return new ResponseEntity<>(HttpStatus.CREATED);
-    }
-    @PostMapping("/evaluation/qcm/info")
-    public ResponseEntity<?> updateQcm(@RequestBody QCM qcm) {
-        try {
-            professeurServices.modifierQCM(qcm);
-            return ResponseEntity.ok("QCM updated successfully.");
-        } catch (QcmNotFoundException ex) {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(ex.getMessage());
-        } catch (Exception ex) {
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Error updating QCM.");
-        }
-    }
-    @DeleteMapping("evaluation/qcm/delete")
-    public ResponseEntity<?> deleteQcm(@PathVariable Long id) {
-        try {
-            professeurServices.deleteQCM(id);
-            return ResponseEntity.ok("QCM deleted successfully.");
-        } catch (QcmNotFoundException ex) {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(ex.getMessage());
-        } catch (Exception ex) {
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Error deleting QCM.");
-        }
-
-
-    }
+//    @GetMapping("Evaluation/Qcm/create")
+//    public ResponseEntity<?> createQcm(@RequestBody QCM qcm) {
+//        professeurService.createQCM(qcm);
+//        return new ResponseEntity<>(HttpStatus.CREATED);
+//    }
+//    @PostMapping("/evaluation/qcm/info")
+//    public ResponseEntity<?> updateQcm(@RequestBody QCM qcm) {
+//        try {
+//            professeurServices.modifierQCM(qcm);
+//            return ResponseEntity.ok("QCM updated successfully.");
+//        } catch (QcmNotFoundException ex) {
+//            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(ex.getMessage());
+//        } catch (Exception ex) {
+//            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Error updating QCM.");
+//        }
+//    }
+//    @DeleteMapping("evaluation/qcm/delete")
+//    public ResponseEntity<?> deleteQcm(@PathVariable Long id) {
+//        try {
+//            professeurServices.deleteQCM(id);
+//            return ResponseEntity.ok("QCM deleted successfully.");
+//        } catch (QcmNotFoundException ex) {
+//            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(ex.getMessage());
+//        } catch (Exception ex) {
+//            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Error deleting QCM.");
+//        }
+//
+//
+//    }
 }

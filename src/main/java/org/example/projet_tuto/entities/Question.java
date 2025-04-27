@@ -21,6 +21,8 @@ public class Question {
 
     @OneToMany(mappedBy = "question", cascade = CascadeType.ALL)
     private Set<Reponse> reponses;
+
+
 }
 
 

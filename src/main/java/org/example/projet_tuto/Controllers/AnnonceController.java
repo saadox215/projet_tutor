@@ -1,20 +1,19 @@
-package org.example.projet_tuto.controller;
+package org.example.projet_tuto.Controllers;
 
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.JwtException;
 import io.jsonwebtoken.Jwts;
+import org.example.projet_tuto.DTOS.AnnonceDTO;
 import org.example.projet_tuto.Service.ProfesseurService;
 import org.example.projet_tuto.entities.Annonce;
 import org.example.projet_tuto.entities.Utilisateur;
 import org.example.projet_tuto.Repository.UtilisateurRepository;
+import org.example.projet_tuto.security.JwtTokenProvider;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.autoconfigure.web.ServerProperties;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-
-import java.nio.charset.StandardCharsets;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
@@ -28,6 +27,8 @@ public class AnnonceController {
     private final ProfesseurService professeurService;
     private final UtilisateurRepository utilisateurRepository;
     private final ServerProperties serverProperties;
+    @Autowired
+    private JwtTokenProvider jwtTokenProvider;
 
     @Autowired
     public AnnonceController(ProfesseurService professeurService, UtilisateurRepository utilisateurRepository, ServerProperties serverProperties) {
@@ -38,14 +39,14 @@ public class AnnonceController {
 
     // Get all announcements
     @GetMapping
-    public ResponseEntity<List<Annonce>> getAllAnnonces() {
+    public ResponseEntity<List<AnnonceDTO>> getAllAnnonces() {
         return ResponseEntity.ok(professeurService.getAllAnnonces());
     }
 
     // Get announcement by ID
     @GetMapping("/{id}")
-    public ResponseEntity<Annonce> getAnnonceById(@PathVariable Long id) {
-        Annonce annonce = professeurService.getAnnonceById(id);
+    public ResponseEntity<AnnonceDTO> getAnnonceById(@PathVariable Long id) {
+        AnnonceDTO annonce = professeurService.getAnnonceById(id);
         if (annonce != null) {
             return ResponseEntity.ok(annonce);
         }
@@ -54,32 +55,47 @@ public class AnnonceController {
 
     // Get announcements by professor ID
     @GetMapping("/professeur/{id}")
-    public ResponseEntity<List<Annonce>> getAnnoncesByProfesseur(@PathVariable Long id) {
+    public ResponseEntity<List<AnnonceDTO>> getAnnoncesByProfesseur(@PathVariable Long id) {
         return ResponseEntity.ok(professeurService.getAnnoncesByProfId(id));
     }
 
     // Get announcements by class ID
     @GetMapping("/classe/{id}")
-    public ResponseEntity<List<Annonce>> getAnnoncesByClasse(@PathVariable Long id) {
+    public ResponseEntity<List<AnnonceDTO>> getAnnoncesByClasse(@PathVariable Long id) {
         return ResponseEntity.ok(professeurService.getAnnoncesByClasseId(id));
     }
 
 
-    // Get announcements by professor email (from token)
     @GetMapping("/professeur/email")
-    public ResponseEntity<?> getAnnoncesByProfesseurEmail(@RequestHeader("Authorization") String token) {
+    public ResponseEntity<?> getAnnoncesByProfesseurEmail(@RequestHeader("Authorization") String authHeader) {
         try {
-            // Extract email from token (simplified - in real app use proper JWT extraction)
-            String email = extractEmailFromToken(token);
-            Utilisateur professeur = utilisateurRepository.findByEmail(email);
+            // Validate Authorization header
+            if (authHeader == null || !authHeader.startsWith("Bearer ")) {
+                return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Invalid or missing Authorization header");
+            }
 
+            // Extract token
+            String token = authHeader.replace("Bearer ", "");
+
+            // Validate token
+            if (!jwtTokenProvider.validateToken(token)) {
+                return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Invalid or expired token");
+            }
+
+            // Extract email
+            String email = jwtTokenProvider.getUsernameFromJWT(token);
+            System.out.println("Extracted email: " + email);
+
+            Utilisateur professeur = utilisateurRepository.findByEmail(email);
             if (professeur == null) {
-                return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("User not found");
+                return ResponseEntity.status(HttpStatus.NOT_FOUND).body("User not found");
             }
 
             return ResponseEntity.ok(professeurService.getAnnoncesByProfId(professeur.getId()));
+        } catch (JwtException | IllegalArgumentException e) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Invalid token: " + e.getMessage());
         } catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Invalid token");
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("An error occurred: " + e.getMessage());
         }
     }
 
@@ -142,18 +158,18 @@ public class AnnonceController {
                 return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("User not found");
             }
 
-            Annonce existingAnnonce = professeurService.getAnnonceById(id);
+            AnnonceDTO existingAnnonce = professeurService.getAnnonceById(id);
 
             if (existingAnnonce == null) {
                 return ResponseEntity.notFound().build();
             }
 
             // Check if the announcement belongs to the professor
-            if (!existingAnnonce.getProfesseur().getId().equals(professeur.getId())) {
+            if (!existingAnnonce.getProfesseurId().equals(professeur.getId())) {
                 return ResponseEntity.status(HttpStatus.FORBIDDEN).body("You don't have permission to update this announcement");
             }
 
-            Annonce updated = professeurService.updateAnnonce(id, updatedAnnonce);
+            AnnonceDTO updated = professeurService.updateAnnonce(id, updatedAnnonce);
             return ResponseEntity.ok(updated);
         } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Error updating announcement: " + e.getMessage());
@@ -173,14 +189,14 @@ public class AnnonceController {
                 return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("User not found");
             }
 
-            Annonce existingAnnonce = professeurService.getAnnonceById(id);
+            AnnonceDTO existingAnnonce = professeurService.getAnnonceById(id);
 
             if (existingAnnonce == null) {
                 return ResponseEntity.notFound().build();
             }
 
             // Check if the announcement belongs to the professor
-            if (!existingAnnonce.getProfesseur().getId().equals(professeur.getId())) {
+            if (!existingAnnonce.getProfesseurId().equals(professeur.getId())) {
                 return ResponseEntity.status(HttpStatus.FORBIDDEN).body("You don't have permission to delete this announcement");
             }
 
@@ -195,29 +211,18 @@ public class AnnonceController {
         }
     }
 
-    @Value("${app.jwt.secret}")
-    private String jwtSecret;
 
-    private String extractEmailFromToken(String token) {
+    public String extractEmailFromToken(String token) {
         try {
-            if (token != null && token.startsWith("Bearer ")) {
-                token = token.substring(7);
+            if (jwtTokenProvider.validateToken(token)) {
+                String email = jwtTokenProvider.getUsernameFromJWT(token);
+                System.out.println("Extracted email: " + email);
+                return email;
+            } else {
+                throw new RuntimeException("Invalid or expired JWT token");
             }
-            if (token == null || token.trim().isEmpty()) {
-                throw new JwtException("Token is empty or null");
-            }
-            Claims claims = Jwts.parserBuilder()
-                    .setSigningKey(jwtSecret.getBytes(StandardCharsets.UTF_8))
-                    .build()
-                    .parseClaimsJws(token)
-                    .getBody();
-            String email = claims.get("email", String.class);
-            if (email == null) {
-                throw new JwtException("Email claim not found in token");
-            }
-            return email;
-        } catch (JwtException e) {
-            throw new RuntimeException("Invalid token: " + e.getMessage(), e);
+        } catch (JwtException | IllegalArgumentException e) {
+            throw new RuntimeException("Invalid JWT token", e);
         }
     }
 }

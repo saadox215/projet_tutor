@@ -21,5 +21,53 @@ public class LiveStreaming {
     @ManyToOne
     @JoinColumn(name = "professeur_id")
     private Utilisateur professeur;
+
+    public Long getId() {
+        return id;
+    }
+
+    public void setId(Long id) {
+        this.id = id;
+    }
+
+    public String getSujet() {
+        return sujet;
+    }
+
+    public void setSujet(String sujet) {
+        this.sujet = sujet;
+    }
+
+    public Date getDateCreation() {
+        return dateCreation;
+    }
+
+    public void setDateCreation(Date dateCreation) {
+        this.dateCreation = dateCreation;
+    }
+
+    public String getMeetingURL() {
+        return meetingURL;
+    }
+
+    public void setMeetingURL(String meetingURL) {
+        this.meetingURL = meetingURL;
+    }
+
+    public Long getZoomMeetingId() {
+        return zoomMeetingId;
+    }
+
+    public void setZoomMeetingId(Long zoomMeetingId) {
+        this.zoomMeetingId = zoomMeetingId;
+    }
+
+    public Utilisateur getProfesseur() {
+        return professeur;
+    }
+
+    public void setProfesseur(Utilisateur professeur) {
+        this.professeur = professeur;
+    }
 }
 
