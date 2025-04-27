@@ -15,6 +15,8 @@ public class LiveStreaming {
 
     private String sujet;
     private Date dateCreation;
+    private String meetingURL;
+    private Long zoomMeetingId;
 
     @ManyToOne
     @JoinColumn(name = "professeur_id")

@@ -1,0 +1,18 @@
+zoom:
+  api:
+    base-url: https://api.zoom.us/v2
+    account-id: n_tWvBzPSxiFco0Pn4eHvw
+    client-id: xjIvvZtTRRyi_POiI4urQ
+    client-secret: yW7C2RI1ZcoQ0WiaGTfNPcYXoFLfg4I7
+spring:
+  security:
+    jwt:
+      secret: YourJWTSecretKeyShouldBeAtLeast512BitsLongForHS512Algorithm12345 # Your existing JWT secret
+      expiration-ms: 86400000
+  datasource:
+    url: jdbc:mysql://localhost:3306/db_smartClass
+    username: root
+    password:
+  jpa:
+    hibernate:
+      ddl-auto: update
