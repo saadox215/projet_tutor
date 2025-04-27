@@ -125,4 +125,24 @@ public class AdminController {
         public ResponseEntity<List<ClassDTO>> getAllClasses() {
             return ResponseEntity.ok(adminService.getAllClasses());
         }
+
+    @PostMapping("/classes/add-student")
+    public ResponseEntity<?> addStudentToClass(@RequestParam Long studentId, @RequestParam Long classId) {
+            try{
+                adminService.studentToClass(studentId, classId);
+                return ResponseEntity.ok("Student added to class successfully");
+            }catch(RuntimeException e){
+                return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
+            }
+        }
+    @PutMapping("/students/{id}/removeFromClass")
+    public ResponseEntity<Void> removeStudentFromClass(@PathVariable Long id) {
+        try {
+            adminService.removeStudentFromClass(id);
+            return ResponseEntity.ok().build();
+        } catch (RuntimeException e) {
+            return ResponseEntity.badRequest().build();
+        }
+    }
+
 }

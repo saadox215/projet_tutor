@@ -1,5 +1,8 @@
 package org.example.projet_tuto.DTOS;
 
+import org.example.projet_tuto.entities.Classe;
+import org.example.projet_tuto.entities.Utilisateur;
+
 import java.util.List;
 import java.util.Objects;
 
@@ -10,6 +13,7 @@ public class UserDTO {
     private String email;
     private String password;
     private String role;
+    private String classe;
     private Long classId;
     private List<Long> classIds;
 
@@ -17,7 +21,7 @@ public class UserDTO {
     }
 
     // Constructeur pour le builder
-    private UserDTO(Long id, String name,String prenom, String email, String role, String password, Long classId, List<Long> classIds) {
+    private UserDTO(Long id, String name,String prenom, String email, String role, String password, Long classId, List<Long> classIds, String classe) {
         this.id = id;
         this.name = name;
         this.prenom = prenom;
@@ -26,11 +30,31 @@ public class UserDTO {
         this.role = role;
         this.classId = classId;
         this.classIds = classIds;
+        this.classe = classe;
     }
-
+    public UserDTO(Utilisateur user) {
+        this.id = user.getId();
+        this.name = user.getName();
+        this.prenom = user.getPrenom();
+        this.email = user.getEmail();
+        this.password = ""; // Avoid exposing the password
+        this.classId = user.getClasse() != null ? user.getClasse().getId() : null;
+        this.role = user.getRoles().stream()
+                .findFirst()
+                .map(role -> role.getName().name())
+                .orElse("");
+    }
     // Getters
     public Long getId() {
         return id;
+    }
+
+    public String getClasse() {
+        return classe;
+    }
+
+    public void setClasse(String classe) {
+        this.classe = classe;
     }
 
     public String getName() {
@@ -107,13 +131,14 @@ public class UserDTO {
                 Objects.equals(password, userDTO.password) &&
                 Objects.equals(classId, userDTO.classId) &&
                 Objects.equals(classIds, userDTO.classIds) &&
-                Objects.equals(role, userDTO.role);
+                Objects.equals(role, userDTO.role) &&
+                Objects.equals(classe, userDTO.classe);
     }
 
     // hashCode()
     @Override
     public int hashCode() {
-        return Objects.hash(id, name,prenom, password,  email, role, classId, classIds);
+        return Objects.hash(id, name,prenom, password,  email, role, classId, classIds, classe);
     }
 
     // toString()
@@ -145,12 +170,20 @@ public class UserDTO {
         private String role;
         private Long classId;
         private List<Long> classIds;
+        private String classe;
 
         public Builder id(Long id) {
             this.id = id;
             return this;
         }
-
+        public Builder classe(Classe classe) {
+            this.classe = classe.getNom();
+            return this;
+        }
+        public Builder classeId(Classe classe) {
+            this.classId = classe.getId();
+            return this;
+        }
         public Builder name(String name) {
             this.name = name;
             return this;
@@ -181,7 +214,7 @@ public class UserDTO {
         }
 
         public UserDTO build() {
-            return new UserDTO(id, name, prenom, email, role, password, classId, classIds);
+            return new UserDTO(id, name, prenom, email, role, password, classId, classIds, classe);
         }
     }
 }

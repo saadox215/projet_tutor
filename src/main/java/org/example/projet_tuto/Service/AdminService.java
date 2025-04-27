@@ -17,15 +17,17 @@ public class AdminService {
     private final ClasseRepository classRepository;
     private final RoleRepository roleRepository;
     private final PasswordEncoder passwordEncoder;
+    private final UtilisateurRepository utilisateurRepository;
 
     public AdminService(UtilisateurRepository userRepository,
                         ClasseRepository classRepository,
                         RoleRepository roleRepository,
-                        PasswordEncoder passwordEncoder) {
+                        PasswordEncoder passwordEncoder, UtilisateurRepository utilisateurRepository) {
         this.userRepository = userRepository;
         this.classRepository = classRepository;
         this.roleRepository = roleRepository;
         this.passwordEncoder = passwordEncoder;
+        this.utilisateurRepository = utilisateurRepository;
     }
 
     // ==================== STATISTICS ====================
@@ -58,7 +60,7 @@ public class AdminService {
             logger.info("User details - Name: {}, Email: {}, Role: {}, Prenom: {}",
                     userDTO.getName(), userDTO.getEmail(), userDTO.getRole(), userDTO.getPrenom());
 
-            if (userRepository.findByEmail(userDTO.getEmail()).isPresent()) {
+            if (userRepository.findByEmail(userDTO.getEmail()) != null){
                 throw new IllegalArgumentException("Email already exists");
             }
 
@@ -208,6 +210,33 @@ public class AdminService {
                 .map(this::mapToClassDTO)
                 .collect(Collectors.toList());
     }
+    // ==================== Student affectation to classes ==================
+    public void studentToClass(Long id_student, Long id_class)
+    {
+        Utilisateur student = utilisateurRepository.findById(id_student).orElseThrow(() -> new RuntimeException("student non trouvee"));
+        Classe classe = classRepository.findById(id_class).orElseThrow(()-> new RuntimeException("classe non trouvee"));
+        if (student.getClasse() != null) {
+            throw new RuntimeException("L'étudiant est déjà affecté à une classe");
+        }
+        if (student.getRoles().stream().noneMatch(role -> role.getName() == RoleType.ETUDIANT)) {
+            throw new RuntimeException("L'utilisateur n'est pas un étudiant");
+        }
+        student.setClasse(classe);
+        userRepository.save(student);
+
+    }
+    @Transactional
+    public void removeStudentFromClass(Long studentId) {
+        Utilisateur student = utilisateurRepository.findById(studentId)
+                .orElseThrow(() -> new RuntimeException("Student not found"));
+
+        if (student.getClasse() == null) {
+            throw new RuntimeException("Student is not assigned to any class");
+        }
+
+        student.setClasse(null);
+        utilisateurRepository.save(student);
+    }
     // ==================== DTO MAPPERS ====================
     private UserDTO mapToUserDTO(Utilisateur user) {
         Logger logger = org.slf4j.LoggerFactory.getLogger(AdminService.class);
@@ -215,24 +244,42 @@ public class AdminService {
                 .findFirst()
                 .map(r -> r.getName().name())
                 .orElse("");
-        logger.info("Mapping user: id={}, name={}, prenom={}, email={},password={}, role={}",
-                user.getId(), user.getName(), user.getPrenom(), user.getEmail(),"", role);
 
-        return UserDTO.builder()
+        UserDTO.Builder builder = UserDTO.builder()
                 .id(user.getId())
                 .name(user.getName())
                 .prenom(user.getPrenom())
                 .email(user.getEmail())
                 .password("")
-                .role(role)
-                .build();
+                .role(role);
+
+        if (user.getClasse() != null) {
+            builder.classId(user.getClasse().getId());
+            builder.classe(user.getClasse());
+        }
+
+        return builder.build();
     }
 
     private ClassDTO mapToClassDTO(Classe classe) {
+        List<Utilisateur> students = userRepository.findByClasse(classe);
+        List<UserDTO> studentDTOs = students.stream()
+                .map(UserDTO::new)
+                .collect(Collectors.toList());
+
+        int studentCount = studentDTOs.size();
+
+        String professorName = classe.getEnseignant() != null
+                ? classe.getEnseignant().getName() + " " + classe.getEnseignant().getPrenom()
+                : "Not Assigned";
+
         return ClassDTO.builder()
                 .id(classe.getId())
                 .name(classe.getNom())
-                .professorId(classe.getEnseignant().getId())
+                .professorId(classe.getEnseignant() != null ? classe.getEnseignant().getId() : null)
+                .professorName(professorName)
+                .students(studentDTOs)
+                .studentCount(studentCount)
                 .build();
     }
 }

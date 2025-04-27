@@ -1,4 +1,6 @@
-import React from "react"
+
+import React, { useState, useEffect } from "react"
+import { useNavigate } from "react-router-dom"
 import {
   Box,
   Typography,
@@ -15,6 +17,7 @@ import {
   Button,
   Chip,
   IconButton,
+  Skeleton,
 } from "@mui/material"
 import {
   Assignment as AssignmentIcon,
@@ -24,10 +27,18 @@ import {
   People as StudentsIcon,
   Add as AddIcon,
   MoreVert as MoreVertIcon,
+  ArrowForward as ArrowForwardIcon,
 } from "@mui/icons-material"
 
+// Import the announcement service
+import AnnouncementService from "./AnnouncementService"
+
 const ProfessorHome = ({ user }) => {
-  // Mock data
+  const navigate = useNavigate();
+  const [announcements, setAnnouncements] = useState([]);
+  const [loadingAnnouncements, setLoadingAnnouncements] = useState(true);
+
+  // Mock data for other sections
   const courses = [
     { id: 1, name: "Data Structures", code: "CS201", students: 120, sections: 2 },
     { id: 2, name: "Database Systems", code: "CS301", students: 95, sections: 1 },
@@ -42,23 +53,6 @@ const ProfessorHome = ({ user }) => {
   const upcomingQuizzes = [
     { id: 1, title: "Midterm Quiz", course: "CS201", date: "2023-12-16", students: 120 },
     { id: 2, title: "SQL Basics", course: "CS301", date: "2023-12-19", students: 95 },
-  ]
-
-  const recentAnnouncements = [
-    {
-      id: 1,
-      title: "Final Project Guidelines",
-      course: "CS201",
-      date: "2023-12-10",
-      views: 112,
-    },
-    {
-      id: 2,
-      title: "Schedule Change for Next Week",
-      course: "CS301",
-      date: "2023-12-09",
-      views: 87,
-    },
   ]
 
   const studentRequests = [
@@ -88,11 +82,38 @@ const ProfessorHome = ({ user }) => {
     },
   ]
 
+  // Fetch recent announcements
+  useEffect(() => {
+    const fetchAnnouncements = async () => {
+      try {
+        setLoadingAnnouncements(true);
+        const data = await AnnouncementService.getAnnouncements();
+        // Get the 3 most recent announcements
+        const recentAnns = data.sort((a, b) => 
+          new Date(b.datePublication) - new Date(a.datePublication)
+        ).slice(0, 3);
+        setAnnouncements(recentAnns);
+      } catch (error) {
+        console.error("Error fetching announcements", error);
+      } finally {
+        setLoadingAnnouncements(false);
+      }
+    };
+
+    fetchAnnouncements();
+  }, []);
+
+  // Format date for display
+  const formatDate = (dateString) => {
+    const options = { year: 'numeric', month: 'short', day: 'numeric' };
+    return new Date(dateString).toLocaleDateString(undefined, options);
+  };
+
   return (
     <Box>
       <Box sx={{ mb: 4 }}>
         <Typography variant="h4" gutterBottom>
-          Welcome back, {user?.name.split(" ")[0] || "Professor"}!
+          Welcome back, {user?.name?.split(" ")[0] || "Professor"}!
         </Typography>
         <Typography variant="body1" color="text.secondary">
           Here's an overview of your teaching activities
@@ -138,7 +159,7 @@ const ProfessorHome = ({ user }) => {
             </Avatar>
             <Box>
               <Typography variant="h4" fontWeight="bold">
-                {pendingGrading.reduce((sum, item) => sum + item.submissions, 0)}
+                {pendingGrading.reduce((sum, item) => sum + (item.submissions || 0), 0)}
               </Typography>
               <Typography variant="body2" color="text.secondary">
                 Pending Submissions
@@ -149,16 +170,131 @@ const ProfessorHome = ({ user }) => {
         <Grid item xs={12} md={3}>
           <Paper sx={{ p: 3, display: "flex", alignItems: "center", height: "100%" }}>
             <Avatar sx={{ bgcolor: "info.main", width: 56, height: 56, mr: 2 }}>
-              <QuizIcon fontSize="large" />
+              <AnnouncementIcon fontSize="large" />
             </Avatar>
             <Box>
               <Typography variant="h4" fontWeight="bold">
-                {upcomingQuizzes.length}
+                {announcements.length}
               </Typography>
               <Typography variant="body2" color="text.secondary">
-                Upcoming Quizzes
+                Recent Announcements
               </Typography>
             </Box>
+          </Paper>
+        </Grid>
+
+        {/* Updated Announcements Section - New Design */}
+        <Grid item xs={12}>
+          <Paper sx={{ p: 0, overflow: "hidden", mb: 3 }}>
+            <Box sx={{ bgcolor: "primary.main", py: 2, px: 3, display: "flex", justifyContent: "space-between", alignItems: "center" }}>
+              <Box sx={{ display: "flex", alignItems: "center" }}>
+                <AnnouncementIcon sx={{ color: "white", mr: 1.5 }} />
+                <Typography variant="h6" color="white">
+                  Recent Announcements
+                </Typography>
+              </Box>
+              <Button 
+                variant="contained" 
+                color="secondary" 
+                size="small"
+                onClick={() => navigate("/professor/announcements")}
+                startIcon={<AddIcon />}
+              >
+                Create New
+              </Button>
+            </Box>
+            
+            {loadingAnnouncements ? (
+              <Box sx={{ p: 3 }}>
+                <Skeleton variant="rectangular" height={100} sx={{ mb: 2 }} />
+                <Skeleton variant="rectangular" height={100} sx={{ mb: 2 }} />
+                <Skeleton variant="rectangular" height={100} />
+              </Box>
+            ) : announcements.length === 0 ? (
+              <Box sx={{ p: 4, textAlign: "center" }}>
+                <AnnouncementIcon sx={{ fontSize: 48, color: "text.secondary", mb: 2 }} />
+                <Typography variant="h6" color="text.secondary" gutterBottom>
+                  No Announcements Yet
+                </Typography>
+                <Typography variant="body2" color="text.secondary" sx={{ mb: 3 }}>
+                  Create your first announcement to keep your students informed
+                </Typography>
+                <Button 
+                  variant="contained" 
+                  color="primary"
+                  onClick={() => navigate("/professor/announcements")}
+                >
+                  Create Announcement
+                </Button>
+              </Box>
+            ) : (
+              <>
+                <List disablePadding>
+                  {announcements.map((announcement, index) => (
+                    <React.Fragment key={announcement.id}>
+                      <ListItem
+                        sx={{ 
+                          px: 3, 
+                          py: 2,
+                          transition: "all 0.2s ease",
+                          "&:hover": { bgcolor: "rgba(0, 0, 0, 0.02)" }
+                        }}
+                      >
+                        <ListItemAvatar>
+                          <Avatar sx={{ bgcolor: "primary.light" }}>
+                            <AnnouncementIcon />
+                          </Avatar>
+                        </ListItemAvatar>
+                        <ListItemText
+                          primary={
+                            <Typography variant="subtitle1" fontWeight="medium">
+                              {announcement.titre}
+                            </Typography>
+                          }
+                          secondary={
+                            <Box>
+                              <Typography variant="body2" color="text.secondary" sx={{ mb: 0.5 }}>
+                                {announcement.description.length > 100 
+                                  ? `${announcement.description.substring(0, 100)}...`
+                                  : announcement.description}
+                              </Typography>
+                              <Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
+                                <Chip 
+                                  label={announcement.classe?.name || "All Classes"} 
+                                  size="small" 
+                                  color="primary" 
+                                  variant="outlined"
+                                />
+                                <Typography variant="caption" color="text.secondary">
+                                  {formatDate(announcement.datePublication)}
+                                </Typography>
+                              </Box>
+                            </Box>
+                          }
+                        />
+                        <IconButton 
+                          edge="end" 
+                          aria-label="view" 
+                          onClick={() => navigate("/professor/announcements")}
+                          sx={{ color: "primary.main" }}
+                        >
+                          <ArrowForwardIcon />
+                        </IconButton>
+                      </ListItem>
+                      {index < announcements.length - 1 && <Divider />}
+                    </React.Fragment>
+                  ))}
+                </List>
+                <Box sx={{ p: 2, textAlign: "center", borderTop: "1px solid #eee" }}>
+                  <Button 
+                    endIcon={<ArrowForwardIcon />}
+                    onClick={() => navigate("/professor/announcements")}
+                  >
+                    View All Announcements
+                  </Button>
+                </Box>
+              </>
+            )}
           </Paper>
         </Grid>
 
@@ -224,7 +360,7 @@ const ProfessorHome = ({ user }) => {
                       </Avatar>
                     </ListItemAvatar>
                     <ListItemText
-                      primary={item.title}
+                      primary={item.title || item.name}
                       secondary={
                         <React.Fragment>
                           <Typography component="span" variant="body2" color="text.primary">
@@ -320,57 +456,10 @@ const ProfessorHome = ({ user }) => {
               </Button>
             </Box>
           </Paper>
-
-          {/* Recent Announcements */}
-          <Paper sx={{ p: 3 }}>
-            <Box sx={{ display: "flex", justifyContent: "space-between", alignItems: "center", mb: 2 }}>
-              <Typography variant="h6">Recent Announcements</Typography>
-              <Button variant="contained" color="primary" startIcon={<AddIcon />} size="small">
-                New
-              </Button>
-            </Box>
-            <List dense>
-              {recentAnnouncements.map((announcement, index) => (
-                <React.Fragment key={announcement.id}>
-                  <ListItem alignItems="flex-start">
-                    <ListItemAvatar>
-                      <Avatar sx={{ bgcolor: "secondary.main" }}>
-                        <AnnouncementIcon />
-                      </Avatar>
-                    </ListItemAvatar>
-                    <ListItemText
-                      primary={announcement.title}
-                      secondary={
-                        <React.Fragment>
-                          <Typography component="span" variant="body2" color="text.primary">
-                            {announcement.course}
-                          </Typography>
-                          {` — ${announcement.date}`}
-                        </React.Fragment>
-                      }
-                    />
-                    <Chip
-                      label={`${announcement.views} views`}
-                      size="small"
-                      variant="outlined"
-                      sx={{ alignSelf: "center" }}
-                    />
-                  </ListItem>
-                  {index < recentAnnouncements.length - 1 && <Divider variant="inset" component="li" />}
-                </React.Fragment>
-              ))}
-            </List>
-            <Box sx={{ mt: 1, textAlign: "right" }}>
-              <Button variant="text" size="small">
-                View All Announcements
-              </Button>
-            </Box>
-          </Paper>
         </Grid>
       </Grid>
     </Box>
   )
 }
-
-export default ProfessorHome
+export default ProfessorHome;
 

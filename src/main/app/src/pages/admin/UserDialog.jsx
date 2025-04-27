@@ -35,17 +35,6 @@ const UserDialog = memo(({ open, onClose, selectedUser, newUser, onUserChange, o
     }
   }, [open]);
 
-  // Handle class selection changes
-  const handleClassChange = (event) => {
-    const value = event.target.value;
-    if (newUser.role === 'ETUDIANT') {
-      // For students, store a single classId
-      onUserChange({ target: { name: 'classId', value } });
-    } else if (newUser.role === 'PROFESSEUR') {
-      // For professors, store an array of classIds
-      onUserChange({ target: { name: 'classIds', value } });
-    }
-  };
 
   return (
     <Dialog
@@ -135,37 +124,6 @@ const UserDialog = memo(({ open, onClose, selectedUser, newUser, onUserChange, o
               </Select>
             </FormControl>
           </Grid>
-          {newUser.role && (
-            <Grid item xs={12}>
-              <FormControl fullWidth variant="outlined" disabled={loadingClasses}>
-                <InputLabel>Class{newUser.role === 'PROFESSEUR' ? 'es' : ''}</InputLabel>
-                <Select
-                  label={`Class${newUser.role === 'PROFESSEUR' ? 'es' : ''}`}
-                  name={newUser.role === 'ETUDIANT' ? 'classId' : 'classIds'}
-                  value={newUser.role === 'ETUDIANT' ? newUser.classId || '' : newUser.classIds || []}
-                  onChange={handleClassChange}
-                  multiple={newUser.role === 'PROFESSEUR'}
-                  sx={{ bgcolor: 'white' }}
-                  renderValue={(selected) => {
-                    if (newUser.role === 'ETUDIANT') {
-                      const selectedClass = classes.find(cls => cls.id === selected);
-                      return selectedClass ? selectedClass.name : '';
-                    }
-                    return selected
-                      .map(id => classes.find(cls => cls.id === id)?.name)
-                      .filter(Boolean)
-                      .join(', ');
-                  }}
-                >
-                  {classes.map(cls => (
-                    <MenuItem key={cls.id} value={cls.id}>
-                      {cls.name}
-                    </MenuItem>
-                  ))}
-                </Select>
-              </FormControl>
-            </Grid>
-          )}
         </Grid>
       </DialogContent>
       <DialogActions sx={{ p: 3 }}>
@@ -182,9 +140,9 @@ const UserDialog = memo(({ open, onClose, selectedUser, newUser, onUserChange, o
           disabled={
             !newUser.name ||
             !newUser.email ||
-            !newUser.role ||
-            (newUser.role === 'ETUDIANT' && !newUser.classId) ||
-            (newUser.role === 'PROFESSEUR' && (!newUser.classIds || newUser.classIds.length === 0))
+            !newUser.prenom ||
+            !newUser.password ||
+            !newUser.role
           }
           sx={{ bgcolor: 'primary.main', px: 4 }}
         >

@@ -81,8 +81,8 @@ const EnhancedLogin = ({ onLogin }) => {
         authorities: data.authorities
       }
 
-      // Store token in localStorage for subsequent requests
       localStorage.setItem('token', data.token)
+      localStorage.setItem('email', data.email)
       
       onLogin(userData)
       navigate(`/${userRole}`)
@@ -94,10 +94,8 @@ const EnhancedLogin = ({ onLogin }) => {
     }
   }
 
-  // Helper function to determine role from authorities
   const determineUserRole = (authorities) => {
-    // Check authorities and return appropriate role
-    if (!authorities || authorities.length === 0) return "student" // Default role
+    if (!authorities || authorities.length === 0) return "student"
     
     const authList = authorities.map(auth => 
       typeof auth === 'string' ? auth : auth.authority

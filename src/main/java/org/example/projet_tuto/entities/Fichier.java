@@ -12,7 +12,7 @@ public class Fichier {
     private Long id;
 
     private String nom;
-    private String url; // lien vers le fichier
+    private String url;
 
     @ManyToOne
     @JoinColumn(name = "professeur_id")

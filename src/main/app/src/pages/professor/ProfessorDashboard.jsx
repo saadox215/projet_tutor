@@ -1,3 +1,4 @@
+// UpdatedProfessorDashboard.jsx
 "use client"
 
 import { useState } from "react"
@@ -39,6 +40,7 @@ import {
 } from "@mui/icons-material"
 
 import ProfessorHome from "./ProfessorHome"
+import AnnouncementPage from "./AnnouncementPage" // Import the new component
 
 const drawerWidth = 240
 
@@ -82,6 +84,7 @@ const ProfessorDashboard = ({ user, onLogout }) => {
     { text: "Quizzes & Exams", icon: <QuizIcon />, path: "/professor/quizzes" },
     { text: "Students", icon: <StudentsIcon />, path: "/professor/students" },
     { text: "Grades", icon: <GradesIcon />, path: "/professor/grades" },
+    // Updated with a more distinct path for announcements
     { text: "Announcements", icon: <AnnouncementIcon />, path: "/professor/announcements" },
   ]
 
@@ -174,7 +177,10 @@ const ProfessorDashboard = ({ user, onLogout }) => {
             <MenuIcon />
           </IconButton>
           <Typography variant="h6" noWrap component="div" sx={{ flexGrow: 1 }}>
-            Professor Dashboard
+            {/* Dynamic title based on current route */}
+            {location.pathname.includes("announcements") 
+              ? "Announcement Management" 
+              : "Professor Dashboard"}
           </Typography>
 
           <Box sx={{ display: "flex" }}>
@@ -234,6 +240,9 @@ const ProfessorDashboard = ({ user, onLogout }) => {
         <Toolbar />
         <Routes>
           <Route path="/" element={<ProfessorHome user={user} />} />
+          {/* Add the announcements route */}
+          <Route path="/announcements" element={<AnnouncementPage user={user} />} />
+          {/* Fallback to home */}
           <Route path="*" element={<ProfessorHome user={user} />} />
         </Routes>
       </Box>
@@ -277,7 +286,6 @@ const ProfessorDashboard = ({ user, onLogout }) => {
         </MenuItem>
       </Menu>
 
-      {/* Notifications Menu */}
       <Menu
         anchorEl={notificationAnchorEl}
         open={Boolean(notificationAnchorEl)}
@@ -318,4 +326,3 @@ const ProfessorDashboard = ({ user, onLogout }) => {
 }
 
 export default ProfessorDashboard
-
