@@ -1,5 +1,6 @@
 package org.example.projet_tuto.entities;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.*;
 

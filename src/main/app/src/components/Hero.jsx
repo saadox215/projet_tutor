@@ -87,17 +87,17 @@ const Hero = () => {
             >
               Transforming{" "}
               <RotatingText
-                texts={["Education", "Learning", "Teaching", "Skills"]}
-                mainClassName="px-2 mx-2 bg-cyan-300 text-black overflow-hidden py-0.5 rounded-lg"
-                staggerFrom="last"
-                initial={{ y: "100%" }}
-                animate={{ y: 0 }}
-                exit={{ y: "-120%" }}
-                staggerDuration={0.025}
-                splitLevelClassName="overflow-hidden"
-                transition={{ type: "spring", damping: 30, stiffness: 400 }}
-                rotationInterval={2000}
-              />
+                  texts={["Education", "Learning", "Teaching"]}
+                  mainClassName="bg-transparent text-white overflow-hidden py-0.5 rounded-lg"
+                  staggerFrom="last"
+                  initial={{ y: "100%" }}
+                  animate={{ y: 0 }}
+                  exit={{ y: "-120%" }}
+                  staggerDuration={0.025}
+                  splitLevelClassName="overflow-hidden"
+                  transition={{ type: "spring", damping: 30, stiffness: 400 }}
+                  rotationInterval={2000}
+                />
               {" "}at ENSA Khouribga
             </Typography>
             

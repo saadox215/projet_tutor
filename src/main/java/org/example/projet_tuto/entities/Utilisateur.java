@@ -1,5 +1,6 @@
 package org.example.projet_tuto.entities;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -118,7 +119,8 @@ public class Utilisateur {
     @JoinColumn(name = "classe_id")
     private Classe classe;
 
-    @OneToMany(mappedBy = "enseignant")
+    @OneToMany(mappedBy = "enseignant",fetch = FetchType.EAGER)
+    @JsonIgnore
     private Set<Classe> classesEnseignees;
 }
 

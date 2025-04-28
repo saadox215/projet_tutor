@@ -7,8 +7,6 @@ import java.util.Date;
 import java.util.Set;
 
 @Entity
-@Getter
-@Setter
 @NoArgsConstructor
 @AllArgsConstructor
 public class Annonce {
@@ -20,6 +18,70 @@ public class Annonce {
     private String description;
     private String contenu;
     private Date datePublication;
+
+    public Long getId() {
+        return id;
+    }
+
+    public void setId(Long id) {
+        this.id = id;
+    }
+
+    public String getTitre() {
+        return titre;
+    }
+
+    public void setTitre(String titre) {
+        this.titre = titre;
+    }
+
+    public String getDescription() {
+        return description;
+    }
+
+    public void setDescription(String description) {
+        this.description = description;
+    }
+
+    public String getContenu() {
+        return contenu;
+    }
+
+    public void setContenu(String contenu) {
+        this.contenu = contenu;
+    }
+
+    public Date getDatePublication() {
+        return datePublication;
+    }
+
+    public void setDatePublication(Date datePublication) {
+        this.datePublication = datePublication;
+    }
+
+    public Utilisateur getProfesseur() {
+        return professeur;
+    }
+
+    public void setProfesseur(Utilisateur professeur) {
+        this.professeur = professeur;
+    }
+
+    public Classe getClasse() {
+        return classe;
+    }
+
+    public void setClasse(Classe classe) {
+        this.classe = classe;
+    }
+
+    public Set<Fichier> getFichiers() {
+        return fichiers;
+    }
+
+    public void setFichiers(Set<Fichier> fichiers) {
+        this.fichiers = fichiers;
+    }
 
     @ManyToOne
     @JoinColumn(name = "professeur_id")
