@@ -85,6 +85,7 @@ public class ZoomService {
             meetingDetails.put("start_time", liveStreaming.getDateCreation());
             meetingDetails.put("timezone", "UTC");
 
+
             log.debug("Creating Zoom meeting with details: {}", meetingDetails);
 
             return webClient.post()

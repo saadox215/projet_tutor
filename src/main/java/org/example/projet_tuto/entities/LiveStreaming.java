@@ -21,6 +21,16 @@ public class LiveStreaming {
     @ManyToOne
     @JoinColumn(name = "professeur_id")
     private Utilisateur professeur;
+    @ManyToOne
+    private Classe classe;
+
+    public Classe getClasse() {
+        return classe;
+    }
+
+    public void setClasse(Classe classe) {
+        this.classe = classe;
+    }
 
     public Long getId() {
         return id;

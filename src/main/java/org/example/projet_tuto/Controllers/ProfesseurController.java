@@ -38,6 +38,7 @@ public class ProfesseurController {
     @PostMapping("/livestreaming")
     @PreAuthorize("hasRole('ROLE_PROFESSEUR')")
     public ResponseEntity<String> createLiveStreaming(@RequestBody LiveStreamingDTO liveStreamingDTO) {
+
         LiveStreaming liveStreaming = liveStreamingDTO.toLiveStreaming();
 
         if (liveStreaming.getSujet() == null || liveStreaming.getDateCreation() == null) {
