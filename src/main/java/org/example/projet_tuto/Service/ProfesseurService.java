@@ -11,6 +11,7 @@ import org.example.projet_tuto.entities.Classe;
 import org.example.projet_tuto.entities.Utilisateur;
 import org.springframework.stereotype.Service;
 
+import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -46,7 +47,7 @@ public class ProfesseurService {
                         annonce.getProfesseur() != null ? annonce.getProfesseur().getId() : null,
                         annonce.getProfesseur() != null ? annonce.getProfesseur().getEmail() : null,
                         annonce.getClasse() != null ? annonce.getClasse().getId() : null,
-                        annonce.getClasse() != null ? annonce.getClasse().getNom() : null
+                        annonce.getClasse() != null ? Collections.singletonList(annonce.getClasse().getNom()) : null
                 ))
                 .collect(Collectors.toList());
     }
@@ -64,7 +65,7 @@ public class ProfesseurService {
                         annonce.getProfesseur() != null ? annonce.getProfesseur().getId() : null,
                         annonce.getProfesseur() != null ? annonce.getProfesseur().getEmail() : null,
                         annonce.getClasse() != null ? annonce.getClasse().getId() : null,
-                        annonce.getClasse() != null ? annonce.getClasse().getNom() : null
+                        annonce.getClasse() != null ? Collections.singletonList(annonce.getClasse().getNom()) : null
                 ))
                 .collect(Collectors.toList());
     }
@@ -81,7 +82,7 @@ public class ProfesseurService {
                         annonce.getProfesseur() != null ? annonce.getProfesseur().getId() : null,
                         annonce.getProfesseur() != null ? annonce.getProfesseur().getEmail() : null,
                         annonce.getClasse() != null ? annonce.getClasse().getId() : null,
-                        annonce.getClasse() != null ? annonce.getClasse().getNom() : null
+                        annonce.getClasse() != null ? Collections.singletonList(annonce.getClasse().getNom()) : null
                 ))
                 .collect(Collectors.toList());
     }
@@ -101,7 +102,7 @@ public class ProfesseurService {
                 annonce.getProfesseur() != null ? annonce.getProfesseur().getId() : null,
                 annonce.getProfesseur() != null ? annonce.getProfesseur().getEmail() : null,
                 annonce.getClasse() != null ? annonce.getClasse().getId() : null,
-                annonce.getClasse() != null ? annonce.getClasse().getNom() : null
+                annonce.getClasse() != null ? Collections.singletonList(annonce.getClasse().getNom()) : null
         );
     }
 
@@ -131,7 +132,7 @@ public class ProfesseurService {
                     savedAnnonce.getProfesseur() != null ? savedAnnonce.getProfesseur().getId() : null,
                     savedAnnonce.getProfesseur() != null ? savedAnnonce.getProfesseur().getEmail() : null,
                     savedAnnonce.getClasse() != null ? savedAnnonce.getClasse().getId() : null,
-                    savedAnnonce.getClasse() != null ? savedAnnonce.getClasse().getNom() : null
+                    savedAnnonce.getClasse() != null ? Collections.singletonList(savedAnnonce.getClasse().getNom()) : null
             );
         }
         return null;
@@ -151,7 +152,7 @@ public class ProfesseurService {
                         annonce.getProfesseur() != null ? annonce.getProfesseur().getId() : null,
                         annonce.getProfesseur() != null ? annonce.getProfesseur().getEmail() : null,
                         annonce.getClasse() != null ? annonce.getClasse().getId() : null,
-                        annonce.getClasse() != null ? annonce.getClasse().getNom() : null
+                        annonce.getClasse() != null ? Collections.singletonList(annonce.getClasse().getNom()) : null
                 ))
                 .collect(Collectors.toList());
     }
@@ -171,7 +172,7 @@ public class ProfesseurService {
                         annonce.getProfesseur() != null ? annonce.getProfesseur().getId() : null,
                         annonce.getProfesseur() != null ? annonce.getProfesseur().getEmail() : null,
                         annonce.getClasse() != null ? annonce.getClasse().getId() : null,
-                        annonce.getClasse() != null ? annonce.getClasse().getNom() : null
+                        annonce.getClasse() != null ? Collections.singletonList(annonce.getClasse().getNom()) : null
                 ))
                 .collect(Collectors.toList());
     }

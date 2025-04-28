@@ -109,7 +109,6 @@ const AnnouncementPage = () => {
       const token = localStorage.getItem("token");
       
       if (editMode) {
-        // Update existing announcement
         const response = await fetch(`http://localhost:8081/api/prof/annonces/${editId}`, {
           method: "PUT",
           headers: {
@@ -148,7 +147,6 @@ const AnnouncementPage = () => {
         }
       }
       
-      // Reset form and reload announcements
       setFormData({
         titre: "",
         description: "",
@@ -210,7 +208,6 @@ const AnnouncementPage = () => {
     }
   };
 
-  // Filter announcements based on search query and selected class
   const filteredAnnouncements = announcements.filter(announcement => {
     const matchesSearch = 
       announcement.titre?.toLowerCase().includes(searchQuery.toLowerCase()) ||
@@ -244,7 +241,6 @@ const AnnouncementPage = () => {
     }
   };
 
-  // Generate random gradient for announcements
   const getGradient = (id) => {
     const gradients = [
       "from-purple-400 to-indigo-500",
@@ -261,7 +257,6 @@ const AnnouncementPage = () => {
     return gradients[index];
   };
 
-  // Function to navigate form steps
   const nextFormStep = () => {
     setFormStep(formStep + 1);
   };
@@ -270,7 +265,6 @@ const AnnouncementPage = () => {
     setFormStep(formStep - 1);
   };
 
-  // Display class distribution
   const classDistribution = () => {
     const distribution = {};
     
@@ -291,7 +285,6 @@ const AnnouncementPage = () => {
 
   return (
     <div className="bg-gradient-to-br from-gray-50 to-gray-100 min-h-screen pb-12">
-      {/* Creative Header with Animated Background */}
       <div className="relative overflow-hidden bg-gradient-to-r from-indigo-500 via-purple-500 to-pink-500">
         <div className="absolute inset-0 opacity-20">
           <div className="absolute inset-0 bg-[url('data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNjAiIGhlaWdodD0iNjAiIHZpZXdCb3g9IjAgMCA2MCA2MCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48ZyBmaWxsPSJub25lIiBmaWxsLXJ1bGU9ImV2ZW5vZGQiPjxnIGZpbGw9IiNmZmYiIGZpbGwtb3BhY2l0eT0iLjQiPjxwYXRoIGQ9Ik0yOS41IDI2LjVMMzUgMzFsLTUuNSA0LjV2LTl6Ii8+PHBhdGggZD0iTTMwIDI3TDM1LjUgMzFsLTUuNSA0di04eiIvPjwvZz48L2c+PC9zdmc+')]"></div>
@@ -371,7 +364,6 @@ const AnnouncementPage = () => {
           </div>
         </div>
         
-        {/* Wave Divider */}
         <div className="absolute bottom-0 left-0 right-0">
           <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1440 320" className="w-full">
             <path fill="#f9fafb" fillOpacity="1" d="M0,96L48,112C96,128,192,160,288,160C384,160,480,128,576,133.3C672,139,768,181,864,181.3C960,181,1056,139,1152,122.7C1248,107,1344,117,1392,122.7L1440,128L1440,320L1392,320C1344,320,1248,320,1152,320C1056,320,960,320,864,320C768,320,672,320,576,320C480,320,384,320,288,320C192,320,96,320,48,320L0,320Z"></path>
@@ -380,7 +372,6 @@ const AnnouncementPage = () => {
       </div>
 
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative -mt-6">
-        {/* Quick Stats */}
         {!showForm && (
           <motion.div 
             initial={{ opacity: 0, y: 20 }}
@@ -438,7 +429,6 @@ const AnnouncementPage = () => {
           </motion.div>
         )}
 
-        {/* Form */}
         <AnimatePresence>
           {showForm && (
             <motion.div
@@ -662,7 +652,6 @@ const AnnouncementPage = () => {
           )}
         </AnimatePresence>
 
-        {/* Filters & Search */}
         {!showForm && (
           <motion.div
             initial={{ opacity: 0, y: 20 }}

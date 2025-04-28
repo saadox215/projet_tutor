@@ -1,4 +1,4 @@
-// UpdatedProfessorDashboard.jsx
+
 "use client"
 
 import { useState } from "react"
@@ -40,7 +40,9 @@ import {
 } from "@mui/icons-material"
 
 import ProfessorHome from "./ProfessorHome"
-import AnnouncementPage from "./AnnouncementPage" // Import the new component
+import AnnouncementPage from "./AnnouncementPage"
+import CreateMeeting from "./CreateMeeting"
+import MeetingList from "./MeetingList"
 
 const drawerWidth = 240
 
@@ -50,6 +52,7 @@ const ProfessorDashboard = ({ user, onLogout }) => {
   const [notificationAnchorEl, setNotificationAnchorEl] = useState(null)
   const navigate = useNavigate()
   const location = useLocation()
+  const token = localStorage.getItem('token');
 
   const handleDrawerToggle = () => {
     setMobileOpen(!mobileOpen)
@@ -82,9 +85,8 @@ const ProfessorDashboard = ({ user, onLogout }) => {
     { text: "My Courses", icon: <CourseIcon />, path: "/professor/courses" },
     { text: "Assignments", icon: <AssignmentIcon />, path: "/professor/assignments" },
     { text: "Quizzes & Exams", icon: <QuizIcon />, path: "/professor/quizzes" },
-    { text: "Students", icon: <StudentsIcon />, path: "/professor/students" },
-    { text: "Grades", icon: <GradesIcon />, path: "/professor/grades" },
-    // Updated with a more distinct path for announcements
+    { text: "ListMeetings", icon: <StudentsIcon />, path: "/professor/ListMeetings" },
+    { text: "CreateMeetings", icon: <GradesIcon />, path: "/professor/createMeetings" },
     { text: "Announcements", icon: <AnnouncementIcon />, path: "/professor/announcements" },
   ]
 
@@ -240,9 +242,9 @@ const ProfessorDashboard = ({ user, onLogout }) => {
         <Toolbar />
         <Routes>
           <Route path="/" element={<ProfessorHome user={user} />} />
-          {/* Add the announcements route */}
           <Route path="/announcements" element={<AnnouncementPage user={user} />} />
-          {/* Fallback to home */}
+          <Route path="/createMeetings" element={<CreateMeeting token={token}></CreateMeeting>} />
+          <Route path="/ListMeetings" element={<MeetingList token={token}></MeetingList>} />
           <Route path="*" element={<ProfessorHome user={user} />} />
         </Routes>
       </Box>

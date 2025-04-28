@@ -2,6 +2,7 @@ package org.example.projet_tuto.DTOS;
 
 
 import java.util.Date;
+import java.util.List;
 
 public class AnnonceDTO {
     private Long id;
@@ -12,11 +13,11 @@ public class AnnonceDTO {
     private Long professeurId; // Include professeur ID instead of the full Utilisateur object
     private String professeurEmail; // Optionally include email for convenience
     private Long classeId; // Include classe ID instead of the full Classe object
-    private String classeNom; // Optionally include class name for convenience
+    private List<String> classeNom; // Optionally include class name for convenience
 
     // Constructor
     public AnnonceDTO(Long id, String titre, String description, String contenu, Date datePublication,
-                      Long professeurId, String professeurEmail, Long classeId, String classeNom) {
+                      Long professeurId, String professeurEmail, Long classeId, List<String> classeNom) {
         this.id = id;
         this.titre = titre;
         this.description = description;
@@ -33,11 +34,11 @@ public class AnnonceDTO {
         return id;
     }
 
-    public String getClasseNom() {
+    public List<String> getClasseNom() {
         return classeNom;
     }
 
-    public void setClasseNom(String classeNom) {
+    public void setClasseNom(List<String> classeNom) {
         this.classeNom = classeNom;
     }
 

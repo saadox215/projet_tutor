@@ -2,6 +2,7 @@
 package org.example.projet_tuto.Service;
 
 import jakarta.persistence.Id;
+import jakarta.transaction.Transactional;
 import org.example.projet_tuto.Exception.StreamingNotFoundException;
 import org.example.projet_tuto.Repository.*;
 import org.example.projet_tuto.entities.*;
@@ -15,14 +16,23 @@ import java.util.Set;
 @Service
 public class ProfesseurServices {
     private final LiveStreamingRepository liveStreamingRepository;
-
+    private final UtilisateurRepository utilisateurRepository;
+    private final ClasseRepository classeRepository;
 
     @Autowired
-    public ProfesseurServices(LiveStreamingRepository liveStreamingRepository) {
+    public ProfesseurServices(LiveStreamingRepository liveStreamingRepository, UtilisateurRepository utilisateurRepository, ClasseRepository classeRepository) {
         this.liveStreamingRepository = liveStreamingRepository;
+        this.utilisateurRepository = utilisateurRepository;
+        this.classeRepository = classeRepository;
     }
 
-    public void createLiveStreaming(LiveStreaming liveStreaming) {
+    @Transactional
+    public void createLiveStreaming(LiveStreaming liveStreaming, Long class_id, Long id_prof) {
+        if (liveStreaming.getSujet() == null || liveStreaming.getDateCreation() == null) {
+            throw new IllegalArgumentException("Subject and start time are required");
+        }
+        liveStreaming.setClasse(classeRepository.findById(class_id).orElse(null));
+        liveStreaming.setProfesseur(utilisateurRepository.findById(id_prof).orElse(null));
         liveStreamingRepository.save(liveStreaming);
     }
 
@@ -37,8 +47,7 @@ public class ProfesseurServices {
     public Optional<LiveStreaming> findLiveStreamingById(Long id) {
         return liveStreamingRepository.findById(id);
     }
-
-
-
-
+    public Set<LiveStreaming> findAllLiveStreamings() {
+        return new HashSet<>(liveStreamingRepository.findAll());
+    }
 }

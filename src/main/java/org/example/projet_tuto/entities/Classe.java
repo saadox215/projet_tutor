@@ -87,6 +87,10 @@ public class Classe {
     @ManyToOne
     @JoinColumn(name = "enseignant_id")
     private Utilisateur enseignant;
+
+    @OneToMany(mappedBy = "classe")
+    @JsonIgnore
+    private Set<LiveStreaming> liveStreamings;
 }
 
 

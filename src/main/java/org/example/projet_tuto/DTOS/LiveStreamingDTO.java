@@ -2,13 +2,14 @@ package org.example.projet_tuto.DTOS;
 
 import org.example.projet_tuto.entities.LiveStreaming;
 
+import java.time.LocalDateTime;
 import java.util.Date;
 
 public class LiveStreamingDTO {
     public String sujet;
-    public Date dateCreation;
+    public LocalDateTime dateCreation;
 
-    public LiveStreamingDTO(String sujet, Date dateCreation) {
+    public LiveStreamingDTO(String sujet, LocalDateTime dateCreation) {
         this.sujet = sujet;
         this.dateCreation = dateCreation;
     }

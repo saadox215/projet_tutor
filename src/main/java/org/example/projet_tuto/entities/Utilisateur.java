@@ -122,5 +122,9 @@ public class Utilisateur {
     @OneToMany(mappedBy = "enseignant",fetch = FetchType.EAGER)
     @JsonIgnore
     private Set<Classe> classesEnseignees;
+
+    @OneToMany(mappedBy = "professeur",fetch = FetchType.EAGER)
+    @JsonIgnore
+    private Set<LiveStreaming> liveStreamings;
 }
 
