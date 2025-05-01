@@ -42,7 +42,7 @@ public class JwtTokenProvider {
                 .parseClaimsJws(token)
                 .getBody();
 
-        return claims.getSubject(); // Returns email as String
+        return claims.getSubject();
     }
 
     public boolean validateToken(String authToken) {
@@ -53,7 +53,6 @@ public class JwtTokenProvider {
                     .parseClaimsJws(authToken);
             return true;
         } catch (JwtException | IllegalArgumentException ex) {
-            // Log exception if needed
             return false;
         }
     }

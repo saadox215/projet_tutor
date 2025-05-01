@@ -4,8 +4,6 @@ import jakarta.persistence.*;
 import lombok.*;
 
 @Entity
-@Getter @Setter
-@NoArgsConstructor @AllArgsConstructor
 public class Reponse {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -17,5 +15,46 @@ public class Reponse {
     @ManyToOne
     @JoinColumn(name = "question_id")
     private Question question;
+
+    public Reponse(Long id, String contenu, boolean correcte, Question question) {
+        this.id = id;
+        this.contenu = contenu;
+        this.correcte = correcte;
+        this.question = question;
+    }
+    public Reponse() {
+    }
+
+    public Long getId() {
+        return id;
+    }
+
+    public void setId(Long id) {
+        this.id = id;
+    }
+
+    public String getContenu() {
+        return contenu;
+    }
+
+    public void setContenu(String contenu) {
+        this.contenu = contenu;
+    }
+
+    public boolean isCorrecte() {
+        return correcte;
+    }
+
+    public void setCorrecte(boolean correcte) {
+        this.correcte = correcte;
+    }
+
+    public Question getQuestion() {
+        return question;
+    }
+
+    public void setQuestion(Question question) {
+        this.question = question;
+    }
 }
 

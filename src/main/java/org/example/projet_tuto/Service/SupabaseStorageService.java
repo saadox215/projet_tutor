@@ -32,7 +32,7 @@ public class SupabaseStorageService {
                 .url(projectUrl + "/storage/v1/object/" + bucketName + "/" + filePath)
                 .addHeader("Authorization", "Bearer " + apiKey)
                 .addHeader("Content-Type", file.getContentType())
-                .addHeader("x-upsert", "true") // autorise l'écrasement
+                .addHeader("x-upsert", "true")
                 .put(fileBody)
                 .build();
 
@@ -42,7 +42,6 @@ public class SupabaseStorageService {
             }
         }
 
-        // Lien public (si bucket en lecture publique)
         return projectUrl + "/storage/v1/object/public/" + bucketName + "/" + filePath;
     }
 
