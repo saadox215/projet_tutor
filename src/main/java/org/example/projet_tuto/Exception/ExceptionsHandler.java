@@ -11,11 +11,13 @@ import org.springframework.web.bind.annotation.ExceptionHandler;
 import java.util.Map;
 
 @ControllerAdvice
-public class ExceptionsHandler {
+public class ExceptionsHandler extends Throwable {
 
     private static final Logger log = LoggerFactory.getLogger(ExceptionsHandler.class);
 
-    @ExceptionHandler({QcmNotFoundException.class, StreamingNotFoundException.class, AnnonceExceptionHandler.class})
+    @ExceptionHandler({QcmNotFoundException.class,
+            StreamingNotFoundException.class,
+            AnnonceExceptionHandler.class})
     public ResponseEntity<Map<String, String>> handlerNotFound(RuntimeException ex) {
         log.warn("Not found exception: {}", ex.getMessage());
         return ResponseEntity
@@ -23,6 +25,16 @@ public class ExceptionsHandler {
                 .contentType(MediaType.APPLICATION_JSON)
                 .body(Map.of("error", ex.getMessage()));
     }
+
+    @ExceptionHandler(ValidationException.class)
+    public ResponseEntity<Map<String, String>> handleValidation(ValidationException ex) {
+        log.warn("Validation exception: {}", ex.getMessage());
+        return ResponseEntity
+                .status(HttpStatus.BAD_REQUEST)
+                .contentType(MediaType.APPLICATION_JSON)
+                .body(Map.of("error", ex.getMessage()));
+    }
+
 
     @ExceptionHandler(Exception.class)
     public ResponseEntity<Map<String, String>> handleGeneric(Exception ex) {
