@@ -14,6 +14,8 @@ public class Question {
     private Long id;
 
     private String contenu;
+    private int note;
+    private boolean correct=false;
 
     @ManyToOne
     @JoinColumn(name = "qcm_id")
