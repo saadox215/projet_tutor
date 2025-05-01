@@ -107,6 +107,14 @@ public class Utilisateur {
     )
     private Set<Role> roles;
 
+    public Set<LiveStreaming> getLiveStreamings() {
+        return liveStreamings;
+    }
+
+    public void setLiveStreamings(Set<LiveStreaming> liveStreamings) {
+        this.liveStreamings = liveStreamings;
+    }
+
     public Set<Classe> getClassesEnseignees() {
         return classesEnseignees;
     }

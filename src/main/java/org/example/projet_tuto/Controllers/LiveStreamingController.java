@@ -1,5 +1,6 @@
 package org.example.projet_tuto.Controllers;
 import jakarta.validation.Valid;
+import org.example.projet_tuto.DTOS.LiveStreamingDTO;
 import org.example.projet_tuto.Repository.UtilisateurRepository;
 import org.example.projet_tuto.entities.LiveStreaming;
 import org.example.projet_tuto.Service.ProfesseurServices;
@@ -148,10 +149,10 @@ public class LiveStreamingController {
 
     @GetMapping(value = "/all", produces = MediaType.APPLICATION_JSON_VALUE)
     @PreAuthorize("hasRole('PROFESSEUR')")
-    public ResponseEntity<List<LiveStreaming>> getAllLiveStreamings() {
+    public ResponseEntity<List<LiveStreamingDTO>> getAllLiveStreamings() {
         try {
             log.info("Retrieving all live streamings");
-            List<LiveStreaming> liveStreamings = professeurServices.findAllLiveStreamings().stream().toList();
+            List<LiveStreamingDTO> liveStreamings = professeurServices.findAllLiveStreamings().stream().toList();
             log.info("Successfully retrieved {} live streamings", liveStreamings.size());
             return new ResponseEntity<>(liveStreamings, HttpStatus.OK);
         } catch (Exception e) {

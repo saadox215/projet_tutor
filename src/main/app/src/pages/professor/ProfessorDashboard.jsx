@@ -43,6 +43,7 @@ import ProfessorHome from "./ProfessorHome"
 import AnnouncementPage from "./AnnouncementPage"
 import CreateMeeting from "./CreateMeeting"
 import MeetingList from "./MeetingList"
+import Fichier from "./Fichier"
 
 const drawerWidth = 240
 
@@ -245,6 +246,7 @@ const ProfessorDashboard = ({ user, onLogout }) => {
           <Route path="/announcements" element={<AnnouncementPage user={user} />} />
           <Route path="/createMeetings" element={<CreateMeeting token={token}></CreateMeeting>} />
           <Route path="/ListMeetings" element={<MeetingList token={token}></MeetingList>} />
+          <Route path="/assignments" element={<Fichier></Fichier>} />
           <Route path="*" element={<ProfessorHome user={user} />} />
         </Routes>
       </Box>

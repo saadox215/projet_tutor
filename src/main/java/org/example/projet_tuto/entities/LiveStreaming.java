@@ -117,8 +117,8 @@ public class LiveStreaming {
     @JoinColumn(name = "professeur_id", referencedColumnName = "id")
     private Utilisateur professeur;
 
-    @ManyToOne(cascade = CascadeType.ALL)
-    @JoinColumn(name = "classe_id", referencedColumnName = "id")
+    @ManyToOne
+    @JoinColumn(name = "classe_id")
     private Classe classe;
 
 }

@@ -89,7 +89,6 @@ public class Classe {
     private Utilisateur enseignant;
 
     @OneToMany(mappedBy = "classe")
-    @JsonIgnore
     private Set<LiveStreaming> liveStreamings;
 }
 
