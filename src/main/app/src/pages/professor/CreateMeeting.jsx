@@ -288,12 +288,17 @@ const CreateMeetingForm = ({ token }) => {
                   </button>
                 </div>
                 <div className="flex justify-center mt-4">
-                  <button 
-                    className="px-6 py-2.5 bg-gradient-to-r from-indigo-600 to-purple-600 text-white text-sm font-medium rounded-lg shadow hover:from-indigo-700 hover:to-purple-700 transition-all flex items-center gap-2"
-                  >
-                    <Video className="w-4 h-4" />
-                    Start Now
-                  </button>
+                <a
+                                href={`${joinUrl}`}
+                                target="_blank"
+                                className={`flex items-center px-3 py-2 text-white rounded-lg shadow transition-all bg-gradient-to-r from-green-600 to-emerald-700 hover:from-green-700 hover:to-emerald-800`}
+                              >
+                                <svg xmlns="http://www.w3.org/2000/svg" className="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                                  <path d="M15 10l5 5-5 5" />
+                                  <path d="M4 4v7a4 4 0 0 0 4 4h12" />
+                                </svg>
+                                Join Now
+                              </a>
                 </div>
               </div>
             )}

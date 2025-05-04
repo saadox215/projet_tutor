@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useCallback } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import {
   PlusIcon,
@@ -35,16 +35,16 @@ const AnnouncementPage = () => {
   const [editMode, setEditMode] = useState(false);
   const [editId, setEditId] = useState(null);
   const [expandedAnnouncement, setExpandedAnnouncement] = useState(null);
-  const [currentView, setCurrentView] = useState("grid"); // grid or list view
-  const [formStep, setFormStep] = useState(1); // Multi-step form
+  const [currentView, setCurrentView] = useState("grid");
+  const [formStep, setFormStep] = useState(1);
   const [animateCards, setAnimateCards] = useState(false);
+  const [isSubmitting, setIsSubmitting] = useState(false); // New state to track submission
 
   // Fetch announcements and classes on component mount
   useEffect(() => {
     fetchAnnouncements();
     fetchClasses();
     
-    // Trigger card animation after initial load
     setTimeout(() => {
       setAnimateCards(true);
     }, 500);
@@ -102,13 +102,24 @@ const AnnouncementPage = () => {
     setFormData({ ...formData, [name]: value });
   };
 
-  const handleSubmit = async (e) => {
+  // Debounced submit handler to prevent double submissions
+  const handleSubmit = useCallback(async (e) => {
     e.preventDefault();
-    
+    e.stopPropagation(); // Prevent event bubbling
+
+    if (isSubmitting) {
+      console.log("Submission already in progress, ignoring...");
+      return;
+    }
+
+    setIsSubmitting(true);
+    console.log("Submitting announcement:", formData);
+
     try {
       const token = localStorage.getItem("token");
       
       if (editMode) {
+        console.log("Updating announcement ID:", editId);
         const response = await fetch(`http://localhost:8081/api/prof/annonces/${editId}`, {
           method: "PUT",
           headers: {
@@ -127,7 +138,7 @@ const AnnouncementPage = () => {
           throw new Error("Failed to update announcement");
         }
       } else {
-        // Create new announcement
+        console.log("Creating new announcement for class ID:", formData.classeId);
         const response = await fetch(`http://localhost:8081/api/prof/annonces?classeId=${formData.classeId}`, {
           method: "POST",
           headers: {
@@ -157,12 +168,15 @@ const AnnouncementPage = () => {
       setEditMode(false);
       setEditId(null);
       setFormStep(1);
-      fetchAnnouncements();
+      await fetchAnnouncements();
+      
     } catch (error) {
       console.error("Error submitting form:", error);
       alert("Error saving announcement. Please try again.");
+    } finally {
+      setIsSubmitting(false);
     }
-  };
+  }, [formData, editMode, editId, isSubmitting]);
 
   const handleEdit = (announcement) => {
     setEditMode(true);
@@ -220,19 +234,16 @@ const AnnouncementPage = () => {
     return matchesSearch && matchesClass;
   });
 
-  // Format date for display
   const formatDate = (dateString) => {
     const options = { year: 'numeric', month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit' };
     return new Date(dateString).toLocaleDateString(undefined, options);
   };
 
-  // Get class name by ID
   const getClassName = (id) => {
     const foundClass = classes.find(c => c.id === parseInt(id) || c.id === id);
     return foundClass ? foundClass.name : "Unknown Class";
   };
 
-  // Toggle expanded announcement
   const toggleExpandAnnouncement = (id) => {
     if (expandedAnnouncement === id) {
       setExpandedAnnouncement(null);
@@ -301,27 +312,31 @@ const AnnouncementPage = () => {
                   <SpeakerWaveIcon className="w-10 h-10 mr-3" />
                   Announcement Central
                 </h1>
-                <p
-  className="mt-3 text-lg max-w-2xl"
-  style={{
-    backgroundImage: 'linear-gradient(to right,rgb(213, 0, 206),rgb(69, 8, 126),rgb(45, 9, 121))',
-    WebkitBackgroundClip: 'text',
-    WebkitTextFillColor: 'transparent',
-  }}
->
-  Create, manage and distribute important announcements to your classes with style and efficiency
-</p>
-                
+                <p className="mt-3 text-lg max-w-2xl bg-gradient-to-r from-pink-400 via-pink-300 to-pink-300 bg-clip-text text-transparent font-medium">
+                  Create, manage and distribute important announcements to your classes with style and efficiency
+                </p>
                 <div className="mt-6 flex flex-wrap gap-3">
-                  <div className="bg-white bg-opacity-20 backdrop-blur-sm rounded-lg p-3 flex items-center space-x-2">
-                    <BellIcon className="h-5 w-5 text-white" />
-                    <span className="text-white text-sm font-medium">{announcements.length} Announcements</span>
-                  </div>
                   
-                  <div className="bg-white bg-opacity-20 backdrop-blur-sm rounded-lg p-3 flex items-center space-x-2">
-                    <AcademicCapIcon className="h-5 w-5 text-white" />
-                    <span className="text-white text-sm font-medium">{classes.length} Classes</span>
-                  </div>
+                  
+                </div>
+                <div className="mt-6 flex flex-wrap gap-3">
+                
+                </div>
+                <div className="mt-6 flex flex-wrap gap-3">
+                  
+                  
+                </div>
+                <div className="mt-6 flex flex-wrap gap-3">
+                  
+                  
+                </div>
+                <div className="mt-6 flex flex-wrap gap-3">
+                  
+                  
+                </div>
+                <div className="mt-2 flex flex-wrap gap-3">
+                  
+                  
                 </div>
               </motion.div>
             </div>
@@ -638,12 +653,29 @@ const AnnouncementPage = () => {
                   ) : (
                     <button
                       type="submit"
-                      className="px-5 py-2 bg-gradient-to-r from-indigo-600 to-purple-600 rounded-lg text-sm font-medium text-white hover:from-indigo-700 hover:to-purple-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 transition flex items-center"
+                      disabled={isSubmitting}
+                      className={`px-5 py-2 rounded-lg text-sm font-medium text-white transition flex items-center ${
+                        isSubmitting
+                          ? "bg-gray-400 cursor-not-allowed"
+                          : "bg-gradient-to-r from-indigo-600 to-purple-600 hover:from-indigo-700 hover:to-purple-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
+                      }`}
                     >
-                      {editMode ? "Update Announcement" : "Publish Announcement"}
-                      <svg className="w-4 h-4 ml-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
-                      </svg>
+                      {isSubmitting ? (
+                        <>
+                          <svg className="animate-spin h-4 w-4 mr-2" viewBox="0 0 24 24">
+                            <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
+                            <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z" />
+                          </svg>
+                          Saving...
+                        </>
+                      ) : (
+                        <>
+                          {editMode ? "Update Announcement" : "Publish Announcement"}
+                          <svg className="w-4 h-4 ml-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
+                          </svg>
+                        </>
+                      )}
                     </button>
                   )}
                 </div>
@@ -661,9 +693,6 @@ const AnnouncementPage = () => {
           >
             <div className="flex flex-col md:flex-row md:items-center justify-between space-y-4 md:space-y-0">
               <div className="relative w-full md:max-w-xs">
-                <div className="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none">
-                <MagnifyingGlassIcon className="w-5 h-5 text-gray-400" />
-                </div>
                 <input
                   type="text"
                   value={searchQuery}
@@ -674,7 +703,6 @@ const AnnouncementPage = () => {
               </div>
 
               <div className="flex space-x-3 items-center">
-                {/* View toggle buttons */}
                 <div className="bg-gray-100 p-1 rounded-lg flex space-x-1 mr-2">
                   <button
                     onClick={() => setCurrentView("grid")}
@@ -728,7 +756,6 @@ const AnnouncementPage = () => {
           </motion.div>
         )}
 
-        {/* Announcements List */}
         <div className="mt-6 pb-10">
           {loading ? (
             <div className="bg-white shadow-lg rounded-xl p-10 text-center border border-gray-100">
@@ -752,7 +779,7 @@ const AnnouncementPage = () => {
                 <div className="mt-6">
                   <button
                     onClick={() => setShowForm(true)}
-                    className="inline-flex items-center px-5 py-3 border border-transparent text-base font-medium rounded-md text-white bg-gradient-to-r from-indigo-600 to-purple-600 hover:from-indigo-700 hover:to-purple-700 shadow-md hover:shadow-lg transition-all"
+                    class dedo="inline-flex items-center px-5 py-3 border border-transparent text-base font-medium rounded-md text-white bg-gradient-to-r from-indigo-600 to-purple-600 hover:from-indigo-700 hover:to-purple-700 shadow-md hover:shadow-lg transition-all"
                   >
                     <PlusIcon className="h-5 w-5 mr-2" />
                     Create Your First Announcement
@@ -762,7 +789,6 @@ const AnnouncementPage = () => {
             </div>
           ) : (
             <>
-              {/* Grid View */}
               {currentView === "grid" && (
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                   {filteredAnnouncements.map((announcement, index) => (
@@ -838,7 +864,6 @@ const AnnouncementPage = () => {
                 </div>
               )}
               
-              {/* List View */}
               {currentView === "list" && (
                 <div className="bg-white rounded-xl shadow-md overflow-hidden border border-gray-100">
                   <div className="overflow-x-auto">
@@ -1019,6 +1044,19 @@ const AnnouncementPage = () => {
           </div>
         </div>
       </footer>
+      <style jsx>{`
+        @keyframes gradientAnimation {
+    0% {
+      background-position: 0% 50%;
+    }
+    50% {
+      background-position: 100% 50%;
+    }
+    100% {
+      background-position: 0% 50%;
+    }
+  }
+      `}</style>
     </div>
   );
 };

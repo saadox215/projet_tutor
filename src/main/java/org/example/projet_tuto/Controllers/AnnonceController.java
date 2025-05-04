@@ -4,6 +4,7 @@ import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.JwtException;
 import io.jsonwebtoken.Jwts;
 import org.example.projet_tuto.DTOS.AnnonceDTO;
+import org.example.projet_tuto.Service.EmailService;
 import org.example.projet_tuto.Service.ProfesseurService;
 import org.example.projet_tuto.entities.Annonce;
 import org.example.projet_tuto.entities.Utilisateur;
@@ -27,14 +28,16 @@ public class AnnonceController {
     private final ProfesseurService professeurService;
     private final UtilisateurRepository utilisateurRepository;
     private final ServerProperties serverProperties;
+    private  final EmailService emailService;
     @Autowired
     private JwtTokenProvider jwtTokenProvider;
 
     @Autowired
-    public AnnonceController(ProfesseurService professeurService, UtilisateurRepository utilisateurRepository, ServerProperties serverProperties) {
+    public AnnonceController(ProfesseurService professeurService, UtilisateurRepository utilisateurRepository, ServerProperties serverProperties, EmailService emailService) {
         this.professeurService = professeurService;
         this.utilisateurRepository = utilisateurRepository;
         this.serverProperties = serverProperties;
+        this.emailService = emailService;
     }
 
     // Get all announcements

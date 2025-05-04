@@ -24,6 +24,7 @@ public class FichierService {
     private final ExerciceRepository exerciceRepository;
     private final SupabaseStorageService supabaseStorageService;
 
+
     public FichierService(FichierRepository fichierRepository,
                           UtilisateurRepository utilisateurRepository,
                           ExerciceRepository exerciceRepository,
@@ -90,5 +91,33 @@ public class FichierService {
                 fichier.getTaille(),
                 fichier.getDateUpload()
         );
+    }
+
+    public Fichier findById(Long id) {
+        return fichierRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Fichier non trouvé"));
+    }
+
+    public void delete(Long id) {
+        Fichier fichier = fichierRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Fichier non trouvé"));
+        fichierRepository.delete(fichier);
+    }
+
+    public FichierDTO getFichierById(Long id, Long id1) {
+        Fichier fichier = fichierRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Fichier non trouvé"));
+        if (fichier.getProfesseur().getId().equals(id1)) {
+            return new FichierDTO(
+                    fichier.getId(),
+                    fichier.getNom(),
+                    fichier.getUrl(),
+                    fichier.getContentType(),
+                    fichier.getTaille(),
+                    fichier.getDateUpload()
+            );
+        } else {
+            throw new RuntimeException("Vous n'avez pas la permission de voir ce fichier");
+        }
     }
 }

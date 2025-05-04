@@ -10,11 +10,6 @@ import {
   Link,
   InputAdornment,
   IconButton,
-  FormControl,
-  InputLabel,
-  Select,
-  MenuItem,
-  Divider,
   Alert,
   Snackbar,
 } from "@mui/material"
@@ -24,7 +19,6 @@ const EnhancedLogin = ({ onLogin }) => {
   const [showPassword, setShowPassword] = useState(false)
   const [email, setEmail] = useState("")
   const [password, setPassword] = useState("")
-  const [role, setRole] = useState("")
   const [error, setError] = useState("")
   const [openSnackbar, setOpenSnackbar] = useState(false)
   const [loading, setLoading] = useState(false)
@@ -67,14 +61,12 @@ const EnhancedLogin = ({ onLogin }) => {
 
       const data = await response.json()
       
-      // Extract role from authorities
       const userRole = determineUserRole(data.authorities)
       
-      // Create user data object from response
       const userData = {
-        id: extractIdFromToken(data.token), // Optional: extract from token if needed
+        id: extractIdFromToken(data.token),
         email: data.email,
-        name: data.email.split("@")[0], // Simple name extraction
+        name: data.email.split("@")[0],
         role: userRole,
         token: data.token,
         avatar: `/placeholder.svg?height=100&width=100&text=${data.email.charAt(0).toUpperCase()}`,
@@ -116,11 +108,9 @@ const EnhancedLogin = ({ onLogin }) => {
       
       return JSON.parse(jsonPayload).sub || Math.floor(Math.random() * 1000)
     } catch (e) {
-      return Math.floor(Math.random() * 1000) // Fallback
+      return Math.floor(Math.random() * 1000)
     }
   }
-
-  
 
   const handleCloseSnackbar = () => {
     setOpenSnackbar(false)
@@ -142,7 +132,6 @@ const EnhancedLogin = ({ onLogin }) => {
         overflow: "hidden",
       }}
     >
-      {/* Back Button */}
       <Box 
         sx={{
           position: "absolute", 
@@ -163,50 +152,54 @@ const EnhancedLogin = ({ onLogin }) => {
             }
           }}
         >
-          Back to Home
+          Back
         </Button>
       </Box>
 
-      {/* Floating Decorative Elements */}
       <Box
         sx={{
           position: "absolute",
-          top: "-10%",
-          left: "-5%",
-          width: "300px",
-          height: "300px",
+          top: { xs: "-15%", md: "-10%" },
+          left: { xs: "-15%", md: "-5%" },
+          width: { xs: "200px", md: "300px" },
+          height: { xs: "200px", md: "300px" },
           background: "rgba(255, 255, 255, 0.1)",
           borderRadius: "50%",
           transform: "rotate(45deg)",
+          display: { xs: "none", sm: "block" }
         }}
       />
       <Box
         sx={{
           position: "absolute",
-          bottom: "-10%",
-          right: "-5%",
-          width: "250px",
-          height: "250px",
+          bottom: { xs: "-15%", md: "-10%" },
+          right: { xs: "-15%", md: "-5%" },
+          width: { xs: "150px", md: "250px" },
+          height: { xs: "150px", md: "250px" },
           background: "rgba(255, 255, 255, 0.1)",
           borderRadius: "50%",
           transform: "rotate(-45deg)",
+          display: { xs: "none", sm: "block" }
         }}
       />
 
-      <Container maxWidth="md">
+      <Container maxWidth="lg">
         <Paper
           elevation={20}
           sx={{
             display: "flex",
+            flexDirection: { xs: "column", md: "row" },
             borderRadius: 4,
             overflow: "hidden",
             boxShadow: "0 20px 60px rgba(0, 0, 0, 0.2)",
+            maxWidth: { xs: "100%", sm: "600px", md: "900px" },
+            margin: "0 auto",
           }}
         >
-          {/* Image Side */}
           <Box
             sx={{
-              width: "50%",
+              width: { xs: "100%", md: "50%" },
+              height: { xs: "250px", md: "auto" },
               background: "url('/api/placeholder/800/1000?text=SmartClass+Learning')",
               backgroundSize: "cover",
               backgroundPosition: "center",
@@ -231,23 +224,32 @@ const EnhancedLogin = ({ onLogin }) => {
                 textAlign: "center",
                 color: "white",
                 zIndex: 10,
+                width: "100%",
+                px: 2
               }}
             >
-              <School sx={{ fontSize: 100, color: "white", mb: 2 }} />
-              <Typography variant="h3" fontWeight="bold" gutterBottom>
+              <School sx={{ fontSize: { xs: 60, md: 100 }, color: "white", mb: 2 }} />
+              <Typography 
+                variant="h3" 
+                fontWeight="bold" 
+                gutterBottom
+                sx={{ fontSize: { xs: "1.8rem", md: "2.5rem" } }}
+              >
                 SmartClass
               </Typography>
-              <Typography variant="subtitle1">
+              <Typography 
+                variant="subtitle1"
+                sx={{ fontSize: { xs: "0.9rem", md: "1rem" } }}
+              >
                 Your Smart Learning Companion
               </Typography>
             </Box>
           </Box>
 
-          {/* Login Form Side */}
           <Box
             sx={{
-              width: "50%",
-              p: 4,
+              width: { xs: "100%", md: "50%" },
+              p: { xs: 3, md: 4 },
               display: "flex",
               flexDirection: "column",
               justifyContent: "center",
@@ -255,11 +257,21 @@ const EnhancedLogin = ({ onLogin }) => {
             }}
           >
             <Box sx={{ textAlign: "center", mb: 3 }}>
-              <LockOpen color="primary" sx={{ fontSize: 50, mb: 1 }} />
-              <Typography variant="h4" component="h1" fontWeight="bold" gutterBottom>
+              <LockOpen color="primary" sx={{ fontSize: { xs: 40, md: 50 }, mb: 1 }} />
+              <Typography 
+                variant="h4" 
+                component="h1" 
+                fontWeight="bold" 
+                gutterBottom
+                sx={{ fontSize: { xs: "1.5rem", md: "2rem" } }}
+              >
                 Welcome Back
               </Typography>
-              <Typography variant="body1" color="text.secondary">
+              <Typography 
+                variant="body1" 
+                color="text.secondary"
+                sx={{ fontSize: { xs: "0.9rem", md: "1rem" } }}
+              >
                 Sign in to access your dashboard
               </Typography>
             </Box>
@@ -321,21 +333,28 @@ const EnhancedLogin = ({ onLogin }) => {
                   background: "linear-gradient(135deg, #3f51b5 0%, #00bcd4 100%)",
                   '&:hover': {
                     background: "linear-gradient(135deg, #3f51b5 50%, #00bcd4 100%)"
-                  }
+                  },
+                  fontSize: { xs: "0.9rem", md: "1rem" }
                 }}
               >
                 {loading ? 'Signing In...' : 'Sign In'}
               </Button>
             </Box>
-
-
-           
           </Box>
         </Paper>
       </Container>
 
-      <Snackbar open={openSnackbar} autoHideDuration={6000} onClose={handleCloseSnackbar}>
-        <Alert onClose={handleCloseSnackbar} severity="error" sx={{ width: "100%" }}>
+      <Snackbar 
+        open={openSnackbar} 
+        autoHideDuration={6000} 
+        onClose={handleCloseSnackbar}
+        anchorOrigin={{ vertical: 'bottom', horizontal: 'center' }}
+      >
+        <Alert 
+          onClose={handleCloseSnackbar} 
+          severity="error" 
+          sx={{ width: { xs: "90%", sm: "100%" } }}
+        >
           {error}
         </Alert>
       </Snackbar>

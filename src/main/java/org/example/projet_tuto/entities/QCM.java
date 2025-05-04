@@ -12,6 +12,9 @@ public class QCM {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+
+
+
     private String titre;
     private Date dateCreation;
 
@@ -23,7 +26,7 @@ public class QCM {
     @JoinColumn(name = "classe_id")
     private Classe classe;
 
-    @OneToMany(mappedBy = "qcm", cascade = CascadeType.ALL)
+    @OneToMany(mappedBy = "qcm", cascade = CascadeType.ALL, fetch = FetchType.EAGER)
     private Set<Question> questions;
 
     public QCM(Long id, String titre, Date dateCreation, Utilisateur professeur, Classe classe, Set<Question> questions) {
@@ -45,6 +48,18 @@ public class QCM {
 
     public String getTitre() {
         return titre;
+    }
+
+    @Override
+    public String toString() {
+        return "QCM{" +
+                "id=" + id +
+                ", titre='" + titre + '\'' +
+                ", dateCreation=" + dateCreation +
+                ", professeur=" + professeur +
+                ", classe=" + classe +
+                ", questions=" + questions.toString() +
+                '}';
     }
 
     public void setTitre(String titre) {
@@ -82,6 +97,7 @@ public class QCM {
     public void setQuestions(Set<Question> questions) {
         this.questions = questions;
     }
+
 }
 
 

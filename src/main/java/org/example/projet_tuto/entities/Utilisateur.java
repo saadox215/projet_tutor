@@ -123,6 +123,14 @@ public class Utilisateur {
         this.classesEnseignees = classesEnseignees;
     }
 
+    public Set<QCM> getQcms() {
+        return qcms;
+    }
+
+    public void setQcms(Set<QCM> qcms) {
+        this.qcms = qcms;
+    }
+
     @ManyToOne
     @JoinColumn(name = "classe_id")
     private Classe classe;
@@ -134,5 +142,8 @@ public class Utilisateur {
     @OneToMany(mappedBy = "professeur",fetch = FetchType.EAGER)
     @JsonIgnore
     private Set<LiveStreaming> liveStreamings;
+
+    @OneToMany(mappedBy = "professeur", fetch = FetchType.EAGER)
+    private Set<QCM> qcms;
 }
 

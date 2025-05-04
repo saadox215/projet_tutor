@@ -5,6 +5,8 @@ import org.example.projet_tuto.DTOS.FichierDTO;
 import org.example.projet_tuto.Repository.UtilisateurRepository;
 import org.example.projet_tuto.Service.ExerciceService;
 import org.example.projet_tuto.Service.FichierService;
+import org.example.projet_tuto.Service.SupabaseStorageService;
+import org.example.projet_tuto.entities.Fichier;
 import org.example.projet_tuto.entities.Utilisateur;
 import org.example.projet_tuto.security.JwtTokenProvider;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -32,9 +34,10 @@ public class ExerciceController {
     private  UtilisateurRepository utilisateurRepository;
     @Autowired
     private JwtTokenProvider jwtTokenProvider;
+    @Autowired
+    private SupabaseStorageService supabaseStorageService;
 
     @PostMapping
-    @PreAuthorize("hasRole('PROFESSEUR')")
     public ResponseEntity<?> createExercice(
             @RequestBody ExerciceDTO exerciceDTO,
             @RequestParam Long classeId, @RequestHeader("Authorization") String authHeader) {
@@ -61,9 +64,53 @@ public class ExerciceController {
 
 
     }
+    @PostMapping("/archiver/{id_exercice}")
+    public ResponseEntity<?> archiveExercice(@PathVariable Long id_exercice, @RequestHeader("Authorization") String authHeader) {
+        try{
+            if (authHeader == null || !authHeader.startsWith("Bearer ")) {
+                return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Invalid or missing Authorization header");
+            }
 
+            String token = authHeader.replace("Bearer ", "");
+
+            if (!jwtTokenProvider.validateToken(token)) {
+                return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Invalid or expired token");
+            }
+
+            String email = jwtTokenProvider.getUsernameFromJWT(token);
+            System.out.println("Extracted email: " + email);
+
+            Utilisateur professeur = utilisateurRepository.findByEmail(email);
+            ExerciceDTO updatedExercice = exerciceService.archiveExercice(id_exercice, professeur.getId());
+            return new ResponseEntity<>(updatedExercice, HttpStatus.OK);
+        }catch(Exception e){
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Invalid or expired token");
+        }
+    }
+    @PostMapping("/dearchiver/{id_exercice}")
+    public ResponseEntity<?> dearchiveExercice(@PathVariable Long id_exercice, @RequestHeader("Authorization") String authHeader) {
+        try{
+            if (authHeader == null || !authHeader.startsWith("Bearer ")) {
+                return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Invalid or missing Authorization header");
+            }
+
+            String token = authHeader.replace("Bearer ", "");
+
+            if (!jwtTokenProvider.validateToken(token)) {
+                return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Invalid or expired token");
+            }
+
+            String email = jwtTokenProvider.getUsernameFromJWT(token);
+            System.out.println("Extracted email: " + email);
+
+            Utilisateur professeur = utilisateurRepository.findByEmail(email);
+            ExerciceDTO updatedExercice = exerciceService.dearchiveExercice(id_exercice, professeur.getId());
+            return new ResponseEntity<>(updatedExercice, HttpStatus.OK);
+        }catch(Exception e){
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Invalid or expired token");
+        }
+    }
     @PostMapping("/{exerciceId}/fichiers")
-    @PreAuthorize("hasRole('PROFESSEUR')")
     public ResponseEntity<FichierDTO> addFichierToExercice(
             @PathVariable Long exerciceId,
             @RequestParam("file") MultipartFile file, @RequestHeader("Authorization") String authHeader) throws IOException {
@@ -88,32 +135,77 @@ public class ExerciceController {
         return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(null);
     }
     }
+ @DeleteMapping("/{id_exercice}")
+ public ResponseEntity<?> deleteExercice(@PathVariable Long id_exercice)
+ {
+        try {
+            exerciceService.deleteExercice(id_exercice);
+            return ResponseEntity.ok().build();
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Error deleting exercice");
+        }
+    }
+    @PostMapping("/{id_exercice}")
+    public ResponseEntity<?> updateExercice(@PathVariable Long id_exercice, @RequestBody ExerciceDTO exerciceDTO) {
+        try {
+            ExerciceDTO updatedExercice = exerciceService.updateExercice(id_exercice, exerciceDTO);
+            return ResponseEntity.ok(updatedExercice);
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Error updating exercice");
+        }
 
-    @DeleteMapping("/fichiers/{ficherId}")
-    @PreAuthorize("hasRole('PROFESSEUR')")
-    public ResponseEntity<Void> deleteFichier(
-            @PathVariable Long ficherId
-            , @RequestHeader("Authorization") String authHeader) throws IOException {
-        try{
-            if (authHeader == null || !authHeader.startsWith("Bearer ")) {
+    }
+
+        @GetMapping("/fichiers/{id}")
+        public ResponseEntity<FichierDTO> getFileById(@PathVariable Long id, @RequestHeader("Authorization") String authHeader) {
+            try {
+                if (authHeader == null || !authHeader.startsWith("Bearer ")) {
+                    return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(null);
+                }
+
+                String token = authHeader.replace("Bearer ", "");
+
+                if (!jwtTokenProvider.validateToken(token)) {
+                    return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(null);
+                }
+
+                String email = jwtTokenProvider.getUsernameFromJWT(token);
+                System.out.println("Extracted email: " + email);
+
+                Utilisateur professeur = utilisateurRepository.findByEmail(email);
+                FichierDTO fileDTO = fichierService.getFichierById(id, professeur.getId());
+                return new ResponseEntity<>(fileDTO, HttpStatus.OK);
+            } catch (Exception e) {
                 return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(null);
+            }
+ }
+    @DeleteMapping("/fichiers/{id}")
+    public ResponseEntity<?> deleteFile(@PathVariable Long id, @RequestHeader("Authorization") String authHeader) {
+        try {
+            if (authHeader == null || !authHeader.startsWith("Bearer ")) {
+                return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Invalid or missing Authorization header");
             }
 
             String token = authHeader.replace("Bearer ", "");
-
             if (!jwtTokenProvider.validateToken(token)) {
-                return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(null);
+                return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Invalid or expired token");
             }
 
             String email = jwtTokenProvider.getUsernameFromJWT(token);
-            System.out.println("Extracted email: " + email);
-
             Utilisateur professeur = utilisateurRepository.findByEmail(email);
-        fichierService.deleteFichier(ficherId, professeur.getId());
-        return new ResponseEntity<>(HttpStatus.NO_CONTENT);
-    }catch (Exception e){
-        return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(null);
-    }
+
+            // Ownership check
+            Fichier file = fichierService.findById(id);
+            if (file == null || !file.getProfesseur().getId().equals(professeur.getId())) {
+                return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("You do not have permission to delete this file");
+            }
+            supabaseStorageService.deleteFile(file.getFirebaseStoragePath());
+            fichierService.delete(id);
+
+            return ResponseEntity.ok().build();
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Invalid or expired token");
+        }
     }
 
     @GetMapping("/{id}")

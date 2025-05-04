@@ -149,10 +149,27 @@ public class LiveStreamingController {
 
     @GetMapping(value = "/all", produces = MediaType.APPLICATION_JSON_VALUE)
     @PreAuthorize("hasRole('PROFESSEUR')")
-    public ResponseEntity<List<LiveStreamingDTO>> getAllLiveStreamings() {
+    public ResponseEntity<?> getAllLiveStreamings(@RequestHeader("Authorization") String authHeader) {
         try {
+            if (authHeader == null || !authHeader.startsWith("Bearer ")) {
+                return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Invalid or missing Authorization header");
+            }
+
+            // Extract token
+            String token = authHeader.replace("Bearer ", "");
+
+            // Validate token
+            if (!jwtTokenProvider.validateToken(token)) {
+                return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Invalid or expired token");
+            }
+
+            // Extract email
+            String email = jwtTokenProvider.getUsernameFromJWT(token);
+            System.out.println("Extracted email: " + email);
+
+            Utilisateur professeur = utilisateurRepository.findByEmail(email);
             log.info("Retrieving all live streamings");
-            List<LiveStreamingDTO> liveStreamings = professeurServices.findAllLiveStreamings().stream().toList();
+            List<LiveStreamingDTO> liveStreamings = professeurServices.findAllLiveStreamings(professeur.getId()).stream().toList();
             log.info("Successfully retrieved {} live streamings", liveStreamings.size());
             return new ResponseEntity<>(liveStreamings, HttpStatus.OK);
         } catch (Exception e) {

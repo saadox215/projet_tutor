@@ -1,5 +1,6 @@
 package org.example.projet_tuto.entities;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -16,12 +17,22 @@ public class Question {
     private String contenu;
     private int note;
 
+    @Override
+    public String toString() {
+        return "Question{" +
+                "id=" + id +
+                ", contenu='" + contenu + '\'' +
+                ", note=" + note +
+                ", qcm=" + qcm +
+                ", reponses=" + reponses.toString() +
+                '}';
+    }
 
     @ManyToOne
     @JoinColumn(name = "qcm_id")
     private QCM qcm;
 
-    @OneToMany(mappedBy = "question", cascade = CascadeType.ALL)
+    @OneToMany(mappedBy = "question", cascade = CascadeType.ALL, fetch = FetchType.EAGER)
     private Set<Reponse> reponses;
 
     public Long getId() {

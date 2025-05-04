@@ -25,6 +25,15 @@ public class Reponse {
     public Reponse() {
     }
 
+    @Override
+    public String toString() {
+        return "Reponse{" +
+                "correcte=" + correcte +
+                ", contenu='" + contenu + '\'' +
+                ", id=" + id +
+                '}';
+    }
+
     public Long getId() {
         return id;
     }

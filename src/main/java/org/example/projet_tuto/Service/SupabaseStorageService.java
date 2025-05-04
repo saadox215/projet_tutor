@@ -23,7 +23,7 @@ public class SupabaseStorageService {
     private final OkHttpClient httpClient = new OkHttpClient();
 
     public String uploadFile(MultipartFile file, String directory) throws IOException {
-        String filename = generateUniqueFilename(file.getOriginalFilename());
+        String filename = file.getOriginalFilename();
         String filePath = directory + "/" + filename;
 
         RequestBody fileBody = RequestBody.create(file.getBytes(), MediaType.parse(file.getContentType()));
@@ -45,19 +45,28 @@ public class SupabaseStorageService {
         return projectUrl + "/storage/v1/object/public/" + bucketName + "/" + filePath;
     }
 
+
     public void deleteFile(String filePath) throws IOException {
+        System.out.println("DELETE URL: " + projectUrl + "/storage/v1/object/" + bucketName + "/" + filePath);
+        System.out.println("Headers:");
+        System.out.println("Authorization: Bearer " + apiKey);
+        System.out.println("apikey: " + apiKey);
+
         Request request = new Request.Builder()
                 .url(projectUrl + "/storage/v1/object/" + bucketName + "/" + filePath)
                 .addHeader("Authorization", "Bearer " + apiKey)
+                .addHeader("apikey", apiKey) // important !
                 .delete()
                 .build();
 
         try (Response response = httpClient.newCall(request).execute()) {
+            System.out.println("Delete status: " + response.code());
             if (!response.isSuccessful()) {
-                throw new IOException("Échec suppression: " + response);
+                throw new IOException("Échec suppression: " + response.body().string());
             }
         }
     }
+
 
     private String generateUniqueFilename(String originalFilename) {
         String extension = "";
