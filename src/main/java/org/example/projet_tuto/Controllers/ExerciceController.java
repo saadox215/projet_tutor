@@ -215,8 +215,17 @@ public class ExerciceController {
     }
 
     @GetMapping("/classe/{classeId}")
-    public ResponseEntity<List<ExerciceDTO>> getExercicesByClasseId(@PathVariable Long classeId) {
-        List<ExerciceDTO> exerciceDTOs = exerciceService.getExercicesByClasseId(classeId);
+    public ResponseEntity<List<ExerciceDTO>> getExercicesByClasseId(@PathVariable Long classeId, @RequestHeader("Authorization") String authHeader) {
+        if (authHeader == null || !authHeader.startsWith("Bearer ")) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(null);
+        }
+        String token = authHeader.replace("Bearer ", "");
+        if (!jwtTokenProvider.validateToken(token)) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(null);
+        }
+        String email = jwtTokenProvider.getUsernameFromJWT(token);
+        Utilisateur professeur = utilisateurRepository.findByEmail(email);
+        List<ExerciceDTO> exerciceDTOs = exerciceService.getExercicesByClasseId(classeId, professeur.getId());
         return new ResponseEntity<>(exerciceDTOs, HttpStatus.OK);
     }
 

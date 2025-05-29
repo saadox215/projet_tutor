@@ -5,8 +5,11 @@ import org.example.projet_tuto.DTOS.ClassDTO;
 import org.example.projet_tuto.DTOS.UserCreationDTO;
 import org.example.projet_tuto.DTOS.UserDTO;
 import org.example.projet_tuto.Service.AdminService;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 
@@ -18,6 +21,7 @@ import java.util.Map;
 @CrossOrigin(origins = "http://localhost:5173")
 public class AdminController {
     private final AdminService adminService;
+    private static final Logger logger = LoggerFactory.getLogger(AdminController.class);
     public AdminController(AdminService adminService) {
         this.adminService = adminService;
     }
@@ -89,34 +93,43 @@ public class AdminController {
     }
 
     // ==================== CLASS MANAGEMENT ====================
-        @PostMapping("/classes")
-        public ResponseEntity<ClassDTO> createClass(@RequestBody ClassDTO classDTO) {
-            try {
-                ClassDTO createdClass = adminService.createClass(classDTO);
-                return ResponseEntity.status(HttpStatus.CREATED).body(createdClass);
-            } catch (RuntimeException e) {
-                return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(null);
-            }
+    @PostMapping("/classes")
+    public ResponseEntity<?> createClass(@RequestBody ClassDTO classDTO) {
+        try {
+            logger.info("Creating class: {}", classDTO.getName());
+            ClassDTO createdClass = adminService.createClass(classDTO);
+            return ResponseEntity.status(HttpStatus.CREATED).body(createdClass);
+        } catch (RuntimeException e) {
+            logger.error("Error creating class: {}", classDTO.getName(), e);
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+                    .body("Failed to create class: " + e.getMessage());
         }
+    }
 
-        @PutMapping("/classes/{id}")
-        public ResponseEntity<ClassDTO> updateClass(@PathVariable Long id, @RequestBody ClassDTO classDTO) {
-            try {
-                ClassDTO updatedClass = adminService.updateClass(id, classDTO);
-                return ResponseEntity.ok(updatedClass);
-            } catch (RuntimeException e) {
-                return ResponseEntity.status(HttpStatus.NOT_FOUND).body(null);
-            }
+    @PutMapping("/classes/{id}")
+    public ResponseEntity<?> updateClass(@PathVariable Long id, @RequestBody ClassDTO classDTO) {
+        try {
+            logger.info("Updating class ID: {}", id);
+            ClassDTO updatedClass = adminService.updateClass(id, classDTO);
+            return ResponseEntity.ok(updatedClass);
+        } catch (RuntimeException e) {
+            logger.error("Error updating class ID: {}", id, e);
+            return ResponseEntity.status(HttpStatus.NOT_FOUND)
+                    .body("Failed to update class: " + e.getMessage());
         }
+    }
 
     @DeleteMapping("/classes/{id}")
-    public ResponseEntity<String> deleteClass(@PathVariable Long id) {
+    @PreAuthorize("hasRole('ADMIN')")
+    public ResponseEntity<?> deleteClass(@PathVariable Long id) {
         try {
+            logger.info("Deleting class ID: {}", id);
             adminService.deleteClass(id);
             return ResponseEntity.noContent().build();
         } catch (RuntimeException e) {
-            System.err.println("Erreur : " + e.getMessage());
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
+            logger.error("Error deleting class ID: {}", id, e);
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+                    .body("Failed to delete class: " + e.getMessage());
         }
     }
 

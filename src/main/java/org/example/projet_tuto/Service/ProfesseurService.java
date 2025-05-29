@@ -1,6 +1,7 @@
 package org.example.projet_tuto.Service;
 
 import jakarta.annotation.PreDestroy;
+import jakarta.transaction.Transactional;
 import org.example.projet_tuto.DTOS.AnnonceDTO;
 import org.example.projet_tuto.DTOS.ClassDTO;
 import org.example.projet_tuto.DTOS.UserDTO;
@@ -216,13 +217,11 @@ public class ProfesseurService {
     }
 
     // ======= getClassesByProfId =======
-    public List<ClassDTO> getClassesByProfId(Long id_prof) {
+    public List<ClassDTO> getClassesByProfId() {
         return classeRepository.findAll().stream()
-                .filter(classe -> classe.getEnseignant() != null && classe.getEnseignant().getId().equals(id_prof))
                 .map(this::mapToClassDTO)
                 .collect(Collectors.toList());
     }
-
     private ClassDTO mapToClassDTO(Classe classe) {
         List<Utilisateur> students = userRepository.findByClasse(classe);
         List<UserDTO> studentDTOs = students.stream()
@@ -231,15 +230,17 @@ public class ProfesseurService {
 
         int studentCount = studentDTOs.size();
 
-        String professorName = classe.getEnseignant() != null
-                ? classe.getEnseignant().getName() + " " + classe.getEnseignant().getPrenom()
-                : "Not Assigned";
+        List<String> professorNames = classe.getEnseignants() != null
+                ? classe.getEnseignants().stream()
+                .map(enseignant -> enseignant.getName() + " " + enseignant.getPrenom())
+                .collect(Collectors.toList())
+                : Collections.singletonList("Not Assigned");
+
 
         return ClassDTO.builder()
                 .id(classe.getId())
                 .name(classe.getNom())
-                .professorId(classe.getEnseignant() != null ? classe.getEnseignant().getId() : null)
-                .professorName(professorName)
+                .professorName(professorNames)
                 .students(studentDTOs)
                 .studentCount(studentCount)
                 .build();
@@ -253,6 +254,19 @@ public class ProfesseurService {
             }
         } catch (InterruptedException e) {
             executorService.shutdownNow();
+        }
+    }
+    @Transactional
+    public List<ClassDTO> getClassesByProfesseurId(Long id) {
+        try {
+            return classeRepository.findAll().stream()
+                    .filter(classe -> classe.getEnseignants() != null && classe.getEnseignants().stream()
+                            .anyMatch(enseignant -> enseignant.getId().equals(id)))
+                    .map(this::mapToClassDTO)
+                    .collect(Collectors.toList());
+        } catch (Exception e) {
+            System.out.println("Error fetching classes for professeur ID: {}" + id);
+            throw new RuntimeException("Failed to fetch classes", e);
         }
     }
 }

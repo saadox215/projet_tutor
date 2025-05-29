@@ -6,4 +6,5 @@ import org.springframework.stereotype.Repository;
 
 @Repository
 public interface FichierRepository extends JpaRepository<Fichier, Long> {
+    Fichier findBySoumissionId(Long assignmentId);
 }

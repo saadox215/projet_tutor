@@ -87,7 +87,7 @@ function App() {
       <Router>
         <div className="app-container">
           <Routes>
-            <Route path="/" element={<LandingPage user={user} onLogout={handleLogout} />} />
+            <Route path="/" element={<LandingPage  onLogout={handleLogout} />} />
             <Route path="/login" element={<Login onLogin={handleLogin} />} />
             <Route path="/signup" element={<Signup onLogin={handleLogin} />} />
 

@@ -199,7 +199,7 @@ public class QcmService {
 
     public Set<QCMDTO> getAllQcms(Long id) {
         log.info("Fetching all QCMs for Professeur ID: {}", id);
-        return qcmRepository.findAll().stream()
+        return qcmRepository.findAll().stream().filter(qcm -> qcm.getProfesseur() != null && qcm.getProfesseur().getId().equals(id))
                 .map(qcm -> mapToQCMDTO(qcm))
                 .collect(Collectors.toSet());
     }

@@ -1,6 +1,8 @@
 package org.example.projet_tuto.DTOS;
 
 
+import org.example.projet_tuto.entities.Fichier;
+
 import java.time.LocalDateTime;
 
 
@@ -22,6 +24,9 @@ public class FichierDTO {
     }
 
     public FichierDTO() {
+    }
+
+    public FichierDTO(Fichier fichier) {
     }
 
     public Long getId() {

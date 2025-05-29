@@ -90,6 +90,7 @@ public class AnnonceController {
             System.out.println("Extracted email: " + email);
 
             Utilisateur professeur = utilisateurRepository.findByEmail(email);
+            System.out.println("Professeur: " + professeur.getId());
             if (professeur == null) {
                 return ResponseEntity.status(HttpStatus.NOT_FOUND).body("User not found");
             }
@@ -124,11 +125,12 @@ public class AnnonceController {
             System.out.println("Extracted email: " + email);
 
             Utilisateur professeur = utilisateurRepository.findByEmail(email);
+            System.out.println("Professeur: " + professeur.getId());
             if (professeur == null) {
                 return ResponseEntity.status(HttpStatus.NOT_FOUND).body("User not found");
             }
 
-            return ResponseEntity.ok(professeurService.getClassesByProfId(professeur.getId()));
+            return ResponseEntity.ok(professeurService.getClassesByProfesseurId(professeur.getId()));
         } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Invalid token");
         }
@@ -273,4 +275,5 @@ public class AnnonceController {
             throw new RuntimeException("Invalid JWT token", e);
         }
     }
+
 }

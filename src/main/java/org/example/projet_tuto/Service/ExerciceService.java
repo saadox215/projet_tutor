@@ -112,8 +112,10 @@ public class ExerciceService {
         return fichierService.uploadFichierForExercice(file, exerciceId, professeurId);
     }
 
-    public List<ExerciceDTO> getExercicesByClasseId(Long classeId) {
-        List<Exercice> exercices = exerciceRepository.findByClasseIdOrderByDatePubDesc(classeId);
+    public List<ExerciceDTO> getExercicesByClasseId(Long classeId, Long professeurId) {
+        List<Exercice> exercices = exerciceRepository.findByClasseIdOrderByDatePubDesc(classeId).stream().filter(
+                exercice -> exercice.getProfesseur().getId().equals(professeurId)
+        ).toList();
         return exercices.stream().map(this::mapToDTO).collect(Collectors.toList());
     }
 
@@ -130,6 +132,7 @@ public class ExerciceService {
 
     private ExerciceDTO mapToDTO(Exercice exercice) {
         List<FichierDTO> fichierDTOs = exercice.getFichiers().stream()
+                .filter(fichier -> fichier.getSoumission() == null )
                 .map(fichier -> new FichierDTO(
                         fichier.getId(),
                         fichier.getNom(),

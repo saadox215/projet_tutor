@@ -79,7 +79,7 @@ const StudentDashboard = ({ user, onLogout }) => {
 
   const menuItems = [
     { text: "Dashboard", icon: <DashboardIcon />, path: "/student" },
-    { text: "My Courses", icon: <BookIcon />, path: "/student/courses" },
+    { text: "Annoncement", icon: <BookIcon />, path: "/student/annonce" },
     { text: "Assignments", icon: <AssignmentIcon />, path: "/student/assignments" },
     { text: "Quizzes", icon: <QuizIcon />, path: "/student/quizzes" },
     { text: "Calendar", icon: <CalendarMonth />, path: "/student/calendar" },
@@ -235,7 +235,7 @@ const StudentDashboard = ({ user, onLogout }) => {
         <Toolbar />
         <Routes>
           <Route path="/" element={<StudentHome user={user} />} />
-          <Route path="/courses" element={<StudentCourses />} />
+          <Route path="/annonce" element={<StudentCourses />} />
           <Route path="/assignments" element={<StudentAssignments />} />
           <Route path="/quizzes" element={<StudentQuizzes />} />
           <Route path="*" element={<StudentHome user={user} />} />

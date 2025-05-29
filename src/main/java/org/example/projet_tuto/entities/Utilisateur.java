@@ -4,6 +4,7 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.*;
 
+import java.util.Arrays;
 import java.util.Set;
 
 @Entity
@@ -135,7 +136,7 @@ public class Utilisateur {
     @JoinColumn(name = "classe_id")
     private Classe classe;
 
-    @OneToMany(mappedBy = "enseignant",fetch = FetchType.EAGER)
+    @ManyToMany(mappedBy = "enseignants",fetch = FetchType.EAGER)
     @JsonIgnore
     private Set<Classe> classesEnseignees;
 
@@ -145,5 +146,32 @@ public class Utilisateur {
 
     @OneToMany(mappedBy = "professeur", fetch = FetchType.EAGER)
     private Set<QCM> qcms;
+
+    @ManyToMany
+    @JoinTable(
+            name = "utilisateur_annonce_vu",
+            joinColumns = @JoinColumn(name = "utilisateur_id"),
+            inverseJoinColumns = @JoinColumn(name = "annonce_id")
+    )
+    private Set<Annonce> annoncesVues;
+
+    public Set<Annonce> getAnnoncesVues() {
+        return annoncesVues;
+    }
+
+    public void setAnnoncesVues(Set<Annonce> annoncesVues) {
+        this.annoncesVues = annoncesVues;
+    }
+
+    public Set<Soumission> getSoumissions() {
+        return soumissions;
+    }
+
+    public void setSoumissions(Set<Soumission> soumissions) {
+        this.soumissions = soumissions;
+    }
+
+    @OneToMany(mappedBy = "etudiant", fetch = FetchType.EAGER)
+    private Set<Soumission> soumissions;
 }
 

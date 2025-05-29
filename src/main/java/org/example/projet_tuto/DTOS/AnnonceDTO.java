@@ -14,6 +14,7 @@ public class AnnonceDTO {
     private String professeurEmail; // Optionally include email for convenience
     private Long classeId; // Include classe ID instead of the full Classe object
     private List<String> classeNom; // Optionally include class name for convenience
+    private boolean vu;
 
     // Constructor
     public AnnonceDTO(Long id, String titre, String description, String contenu, Date datePublication,
@@ -28,6 +29,19 @@ public class AnnonceDTO {
         this.classeId = classeId;
         this.classeNom = classeNom;
     }
+    public AnnonceDTO(Long id, String titre, String description, String contenu, Date datePublication,
+                      Long professeurId, String professeurEmail, Long classeId, List<String> classeNom, boolean vu) {
+        this.id = id;
+        this.titre = titre;
+        this.description = description;
+        this.contenu = contenu;
+        this.datePublication = datePublication;
+        this.professeurId = professeurId;
+        this.professeurEmail = professeurEmail;
+        this.classeId = classeId;
+        this.classeNom = classeNom;
+        this.vu = vu;
+    }
 
     // Getters and setters
     public Long getId() {
@@ -36,6 +50,14 @@ public class AnnonceDTO {
 
     public List<String> getClasseNom() {
         return classeNom;
+    }
+
+    public boolean isVu() {
+        return vu;
+    }
+
+    public void setVu(boolean vu) {
+        this.vu = vu;
     }
 
     public void setClasseNom(List<String> classeNom) {
