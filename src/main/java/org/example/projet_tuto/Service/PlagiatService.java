@@ -65,7 +65,7 @@ public class PlagiatService {
                 plagiatRepository.save(plagiat);
 
             } else {
-                throw new RuntimeException("❌ Échec de la requête Django : HTTP " + response.code());
+                throw new RuntimeException(" Échec de la requête Django : HTTP " + response.code());
             }
         }
     }
