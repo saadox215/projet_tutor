@@ -51,9 +51,9 @@ public class PlagiatService {
                 String texte = result.containsKey("texte_similaire") ? result.get("texte_similaire").toString() : "";
                 String fichierSimilaire = result.containsKey("avec") ? result.get("avec").toString() : "Aucun";
 
-                System.out.println("✅ Score de plagiat = " + score + "%");
-                System.out.println("📄 Fichier similaire : " + fichierSimilaire);
-                System.out.println("📝 Texte similaire (début) : " + (texte.length() > 100 ? texte.substring(0, 100) + "..." : texte));
+                System.out.println("Score de plagiat = " + score + "%");
+                System.out.println(" Fichier similaire : " + fichierSimilaire);
+                System.out.println(" Texte similaire (début) : " + (texte.length() > 100 ? texte.substring(0, 100) + "..." : texte));
 
                 soumission.setNomFichier(fichier.getOriginalFilename());
                 soumission.setTexte(texte);
@@ -65,7 +65,7 @@ public class PlagiatService {
                 plagiatRepository.save(plagiat);
 
             } else {
-                throw new RuntimeException(" Échec de la requête Django : HTTP " + response.code());
+                throw new RuntimeException("Échec de la requête Django : HTTP " + response.code());
             }
         }
     }

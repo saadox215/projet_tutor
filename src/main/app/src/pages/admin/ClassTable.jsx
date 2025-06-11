@@ -16,7 +16,7 @@ const ClassTable = ({
   setPage,
   setRowsPerPage,
   handleOpenClassDialog,
-  getProfessorName
+  getProfessorName // Optional, may not be needed if using professorNames
 }) => {
   const [filteredClasses, setFilteredClasses] = useState([]);
   const [totalClasses, setTotalClasses] = useState(0);
@@ -29,7 +29,8 @@ const ClassTable = ({
     if (searchTerm) {
       const search = searchTerm.toLowerCase();
       result = result.filter(classObj => 
-        classObj.name.toLowerCase().includes(search)
+        classObj.name.toLowerCase().includes(search) ||
+        (classObj.professorNames && classObj.professorNames.some(name => name.toLowerCase().includes(search)))
       );
     }
     
@@ -72,7 +73,7 @@ const ClassTable = ({
           <FiSearch className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" />
           <input
             type="text"
-            placeholder="Search classes..."
+            placeholder="Search classes or professors..."
             value={searchTerm}
             onChange={(e) => {
               setSearchTerm(e.target.value);
@@ -90,7 +91,7 @@ const ClassTable = ({
             <tr className="bg-gray-100 text-gray-600 text-sm font-semibold uppercase">
               <th className="px-4 py-3 text-left">ID</th>
               <th className="px-4 py-3 text-left">Class Name</th>
-              <th className="px-4 py-3 text-left">Professor</th>
+              <th className="px-4 py-3 text-left">Professors</th>
               <th className="px-4 py-3 text-right">Actions</th>
             </tr>
           </thead>
@@ -115,10 +116,19 @@ const ClassTable = ({
                     <div className="font-medium">{classObj.name}</div>
                   </td>
                   <td className="px-4 py-3">
-                    <div className="flex flex-col">
-                      <span className="bg-blue-100 text-blue-800 text-xs font-medium px-2.5 py-0.5 rounded inline-flex items-center w-fit">
-                        <FiUsers className="mr-1" /> {getProfessorName(classObj.professorId)}
-                      </span>
+                    <div className="flex flex-wrap gap-1">
+                      {classObj.professorNames && classObj.professorNames.length > 0 ? (
+                        classObj.professorNames.map((name, index) => (
+                          <span
+                            key={index}
+                            className="bg-blue-100 text-blue-800 text-xs font-medium px-2.5 py-0.5 rounded inline-flex items-center"
+                          >
+                            <FiUsers className="mr-1" /> {name}
+                          </span>
+                        ))
+                      ) : (
+                        <span className="text-gray-500 text-xs">No professors assigned</span>
+                      )}
                     </div>
                   </td>
                   <td className="px-4 py-3 text-right">

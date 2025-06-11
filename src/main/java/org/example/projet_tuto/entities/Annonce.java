@@ -2,7 +2,6 @@ package org.example.projet_tuto.entities;
 
 import jakarta.persistence.*;
 import lombok.*;
-
 import java.util.Date;
 import java.util.Set;
 
@@ -19,6 +18,18 @@ public class Annonce {
     private String contenu;
     private Date datePublication;
 
+    @ManyToOne
+    @JoinColumn(name = "professeur_id")
+    private Utilisateur professeur;
+
+    @ManyToOne
+    @JoinColumn(name = "classe_id")
+    private Classe classe;
+
+    @OneToMany(mappedBy = "annonce", cascade = CascadeType.ALL)
+    private Set<Fichier> fichiers;
+
+    // Getters and setters
     public Long getId() {
         return id;
     }
@@ -82,16 +93,4 @@ public class Annonce {
     public void setFichiers(Set<Fichier> fichiers) {
         this.fichiers = fichiers;
     }
-
-    @ManyToOne
-    @JoinColumn(name = "professeur_id")
-    private Utilisateur professeur;
-
-    @ManyToOne
-    @JoinColumn(name = "classe_id")
-    private Classe classe;
-
-    @OneToMany(mappedBy = "annonce", cascade = CascadeType.ALL)
-    private Set<Fichier> fichiers;
-
 }

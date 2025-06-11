@@ -30,6 +30,14 @@ public class Fichier {
     @Column(nullable = true)
     private String firebaseStoragePath;
 
+    public Soumission getSoumission() {
+        return soumission;
+    }
+
+    public void setSoumission(Soumission soumission) {
+        this.soumission = soumission;
+    }
+
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "professeur_id", nullable = false)
     private Utilisateur professeur;
@@ -41,6 +49,18 @@ public class Fichier {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "exercice_id", nullable = true)
     private Exercice exercice;
+    public Fichier(Long id, String nom, String url, String contentType, Long taille, LocalDateTime dateUpload, String firebaseStoragePath, Utilisateur professeur) {
+        this.id = id;
+        this.nom = nom;
+        this.url = url;
+        this.contentType = contentType;
+        this.taille = taille;
+        this.dateUpload = dateUpload;
+        this.firebaseStoragePath = firebaseStoragePath;
+        this.professeur = professeur;
+    }
+    @ManyToOne
+    private Soumission soumission;
 
     public Fichier() {
     }

@@ -23,7 +23,7 @@ const ClassDialog = memo(({ open, onClose, selectedClass, newClass, onClassChang
             <TextField
               label="Class Name"
               name="name"
-              value={newClass.name}
+              value={newClass.name || ''}
               onChange={onClassChange}
               fullWidth
               required
@@ -34,12 +34,22 @@ const ClassDialog = memo(({ open, onClose, selectedClass, newClass, onClassChang
           </Grid>
           <Grid item xs={12}>
             <FormControl fullWidth required variant="outlined">
-              <InputLabel>Professor</InputLabel>
+              <InputLabel>Professors</InputLabel>
               <Select
-                label="Professor"
-                name="professorId"
-                value={newClass.professorId}
+                label="Professors"
+                name="professorIds"
+                multiple
+                value={newClass.professorIds || []}
                 onChange={onClassChange}
+                renderValue={(selected) => (
+                  selected
+                    .map(id => {
+                      const professor = professors.find(p => p.id === id);
+                      return professor ? `${professor.name} ${professor.prenom}` : '';
+                    })
+                    .filter(name => name)
+                    .join(', ')
+                )}
                 sx={{ bgcolor: 'white' }}
               >
                 {professors.map(professor => (
@@ -47,7 +57,6 @@ const ClassDialog = memo(({ open, onClose, selectedClass, newClass, onClassChang
                     {professor.name} {professor.prenom}
                   </MenuItem>
                 ))}
-                <MenuItem value="">Select Professor</MenuItem>
               </Select>
             </FormControl>
           </Grid>
@@ -64,7 +73,7 @@ const ClassDialog = memo(({ open, onClose, selectedClass, newClass, onClassChang
         <Button
           onClick={onSubmit}
           variant="contained"
-          disabled={!newClass.name || !newClass.professorId}
+          disabled={!newClass.name || !newClass.professorIds || newClass.professorIds.length === 0}
           sx={{ bgcolor: 'primary.main', px: 4 }}
         >
           {selectedClass ? 'Update' : 'Create'}

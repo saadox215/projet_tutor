@@ -1,26 +1,38 @@
 package org.example.projet_tuto.DTOS;
 
 
+import com.fasterxml.jackson.annotation.JsonProperty;
+
 import java.util.List;
 import java.util.Objects;
 
 public class ClassDTO {
     private Long id;
     private String name;
-    private Long professorId;
-    private String professorName; // Added for professor's full name
+    private List<Long> professorIds;
+    private List<String> professorNames; // Added for professor's full name
     private List<UserDTO> students;
     private int studentCount; // Added for the number of assigned students
 
     public ClassDTO() {
     }
 
-    private ClassDTO(Long id, String name, Long professorId, String professorName, List<UserDTO> students, int studentCount) {
+    @JsonProperty("professorIds")
+    public List<Long> getProfessorIds() {
+        return professorIds;
+    }
+
+    @JsonProperty("professorIds")
+    public void setProfessorIds(List<Long> professorIds) {
+        this.professorIds = professorIds;
+    }
+
+    private ClassDTO(Long id, String name,List<Long> professorIds , List<String> professorName, List<UserDTO> students, int studentCount) {
         this.id = id;
         this.name = name;
-        this.professorId = professorId;
-        this.professorName = professorName;
+        this.professorNames = professorName;
         this.students = students;
+        this.professorIds = professorIds;
         this.studentCount = studentCount;
     }
 
@@ -29,16 +41,13 @@ public class ClassDTO {
         return id;
     }
 
-    public void setProfessorId(Long professorId) {
-        this.professorId = professorId;
+
+    public List<String> getProfessorName() {
+        return professorNames;
     }
 
-    public String getProfessorName() {
-        return professorName;
-    }
-
-    public void setProfessorName(String professorName) {
-        this.professorName = professorName;
+    public void setProfessorName(List<String> professorName) {
+        this.professorNames = professorName;
     }
 
     public List<UserDTO> getStudents() {
@@ -61,9 +70,6 @@ public class ClassDTO {
         return name;
     }
 
-    public Long getProfessorId() {
-        return professorId;
-    }
 
     // Setters
     public void setId(Long id) {
@@ -74,8 +80,12 @@ public class ClassDTO {
         this.name = name;
     }
 
-    public void setProfessorName(Long professorName) {
-        this.professorId = professorName;
+    public List<String> getProfessorNames() {
+        return professorNames;
+    }
+
+    public void setProfessorNames(List<String> professorNames) {
+        this.professorNames = professorNames;
     }
 
     // equals()
@@ -86,8 +96,8 @@ public class ClassDTO {
         ClassDTO classDTO = (ClassDTO) o;
         return Objects.equals(id, classDTO.id) &&
                 Objects.equals(name, classDTO.name) &&
-                Objects.equals(professorId, classDTO.professorId) &&
-                Objects.equals(professorName, classDTO.professorName) &&
+                Objects.equals(professorIds, classDTO.professorIds) &&
+                Objects.equals(professorNames, classDTO.professorNames) &&
                 Objects.equals(students, classDTO.students) &&
                 Objects.equals(studentCount, classDTO.studentCount);
     }
@@ -95,7 +105,7 @@ public class ClassDTO {
     // hashCode()
     @Override
     public int hashCode() {
-        return Objects.hash(id, name, professorId, professorName, students, studentCount);
+        return Objects.hash(id, name,professorNames, students, studentCount);
     }
 
     // toString()
@@ -104,10 +114,8 @@ public class ClassDTO {
         return "ClassDTO{" +
                 "id=" + id +
                 ", name='" + name + '\'' +
-                ", professorName='" + professorId + '\'' +
                 ", students=" + students +
                 ", studentCount=" + studentCount +
-                ", professorId=" + professorId +
                 '}';
     }
 
@@ -119,14 +127,18 @@ public class ClassDTO {
     public static class Builder {
         private Long id;
         private String name;
-        private Long professorId;
-        private String professorName;
+        private List<Long> professorIds;
+        private List<String> professorNames;
         private List<UserDTO> students;
         private int studentCount;
         private Builder() {
         }
-        public Builder professorName(String professorName) {
-            this.professorName = professorName;
+        public Builder professorName(List<String> professorNames) {
+            this.professorNames = professorNames;
+            return this;
+        }
+        public Builder professorIds(List<Long> professorIds) {
+            this.professorIds = professorIds;
             return this;
         }
         public Builder students(List<UserDTO> students) {
@@ -148,13 +160,11 @@ public class ClassDTO {
             return this;
         }
 
-        public Builder professorId(Long professorId) {
-            this.professorId = professorId;
-            return this;
-        }
 
         public ClassDTO build() {
-            return new ClassDTO(id, name, professorId, professorName, students, studentCount);
+            return new ClassDTO(id, name,professorIds, professorNames, students, studentCount);
         }
+
+
     }
 }

@@ -1,4 +1,4 @@
-;("use client")
+// "use client"
 
 import { useState, useEffect, useRef } from "react"
 import { Container, Grid, Typography, Box, Card, CardContent, CardMedia, IconButton } from "@mui/material"
@@ -58,13 +58,6 @@ const features = [
     description: "Conduct live classes with real-time interaction, chat, and recording capabilities for later review.",
     icon: <Videocam fontSize="large" color="primary" />,
     image: live,
-  },
-  {
-    title: "User Management",
-    description:
-      "Comprehensive user management with different roles and permissions for administrators, professors, and students.",
-    icon: <People fontSize="large" color="primary" />,
-    image: user,
   },
 ]
 
@@ -171,19 +164,53 @@ const Features = () => {
                     transform: "translateY(-10px)",
                     boxShadow: "0 15px 35px rgba(0, 0, 0, 0.15)",
                   },
+                  // Ajout d'une hauteur fixe pour toutes les cartes
+                  
                 }}
               >
-                <CardMedia component="img" height="200" image={feature.image} alt={feature.title} />
-                <CardContent sx={{ flexGrow: 1, p: 1 }}>
-                  <Box sx={{ display: "flex", alignItems: "center", mb: 2 }}>
-                    <Box sx={{ mr: 2 }}>{feature.icon}</Box>
-                    <Typography variant="h5" component="h3" sx={{ fontWeight: 600 }}>
-                      {feature.title}
+                <CardMedia 
+                  component="img" 
+                  height="200" 
+                  image={feature.image} 
+                  alt={feature.title} 
+                  sx={{
+                    // Assurer que toutes les images ont la même taille
+                    height: "200px",
+                    objectFit: "cover",
+                    objectPosition: "center",
+                  }}
+                />
+                <CardContent 
+                  sx={{ 
+                    flexGrow: 1, 
+                    p: 3,
+                    // Garantir que le contenu a une hauteur uniforme
+                    height: "250px",
+                    display: "flex",
+                    flexDirection: "column",
+                    justifyContent: "space-between",
+                  }}
+                >
+                  <Box>
+                    <Box sx={{ display: "flex", alignItems: "center", mb: 2 }}>
+                      <Box sx={{ mr: 2 }}>{feature.icon}</Box>
+                      <Typography variant="h5" component="h3" sx={{ fontWeight: 600 }}>
+                        {feature.title}
+                      </Typography>
+                    </Box>
+                    <Typography 
+                      variant="body1" 
+                      color="text.secondary" 
+                      sx={{ 
+                        mb: 2,
+                        // Garantir que les descriptions ont la même hauteur
+                        minHeight: "80px",
+                        overflow: "hidden",
+                      }}
+                    >
+                      {feature.description}
                     </Typography>
                   </Box>
-                  <Typography variant="body1" color="text.secondary" sx={{ mb: 2 }}>
-                    {feature.description}
-                  </Typography>
                   <Box sx={{ display: "flex", justifyContent: "flex-end" }}>
                     <IconButton color="primary" aria-label="learn more">
                       <ArrowForward />
@@ -200,4 +227,3 @@ const Features = () => {
 }
 
 export default Features
-

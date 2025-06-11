@@ -84,7 +84,7 @@ function Navbar({ scrolled, user, onLogout }) {
               src={logo}
               alt="Logo"
               style={{
-                height: "100px",
+                maxHeight: "100px",
                 objectFit: "contain",
               }}
             />
@@ -137,14 +137,7 @@ function Navbar({ scrolled, user, onLogout }) {
               flexGrow: 1,
             }}
           >
-            <img
-              src="../assets/logo.png"
-              alt="Logo"
-              style={{
-                height: "40px",
-                objectFit: "contain",
-              }}
-            />
+            
           </Box>
           <Typography
             variant="h5"

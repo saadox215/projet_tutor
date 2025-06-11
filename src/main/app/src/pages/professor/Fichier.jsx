@@ -81,17 +81,17 @@ const Toast = ({ message, type, onClose }) => {
                  type === 'warning' ? 'bg-yellow-500' : 'bg-blue-500';
   
   return (
-    <div className={`fixed bottom-4 right-4 ${bgColor} text-white p-4 rounded-lg shadow-lg flex items-center z-50 transition-opacity duration-300 ${visible ? 'opacity-100' : 'opacity-0'}`}>
-      {type === 'success' && <CheckCircle className="w-5 h-5 mr-2" />}
-      {type === 'error' && <AlertTriangle className="w-5 h-5 mr-2" />}
-      {type === 'warning' && <Info className="w-5 h-5 mr-2" />}
-      {type === 'info' && <Info className="w-5 h-5 mr-2" />}
-      <p>{message}</p>
+    <div className={`fixed bottom-4 right-4 ${bgColor} text-white p-3 sm:p-4 rounded-lg shadow-lg flex items-center z-50 transition-opacity duration-300 ${visible ? 'opacity-100' : 'opacity-0'}`}>
+      {type === 'success' && <CheckCircle className="w-4 sm:w-5 h-4 sm:h-5 mr-2" />}
+      {type === 'error' && <AlertTriangle className="w-4 sm:w-5 h-4 sm:h-5 mr-2" />}
+      {type === 'warning' && <Info className="w-4 sm:w-5 h-4 sm:h-5 mr-2" />}
+      {type === 'info' && <Info className="w-4 sm:w-5 h-4 sm:h-5 mr-2" />}
+      <p className="text-sm sm:text-base">{message}</p>
       <button 
         onClick={onClose} 
-        className="ml-4 p-1 rounded-full hover:bg-white hover:bg-opacity-20 transition-colors duration-200"
+        className="ml-3 sm:ml-4 p-1 rounded-full hover:bg-white hover:bg-opacity-20 transition-colors duration-200"
       >
-        <X className="w-4 h-4" />
+        <X className="w-3 sm:w-4 h-3 sm:h-4" />
       </button>
     </div>
   );
@@ -178,7 +178,9 @@ const ExerciseManagement = ({ onLogout, userName }) => {
   }, []);
 
   useEffect(() => {
-    if (selectedClassId) {
+    if
+
+ (selectedClassId) {
       fetchExercisesByClassId(selectedClassId);
     }
   }, [selectedClassId]);
@@ -297,29 +299,29 @@ const ExerciseManagement = ({ onLogout, userName }) => {
     
     if (diff < 0) {
       return (
-        <span className="flex items-center px-3 py-1 text-xs font-medium bg-red-100 text-red-800 rounded-full">
-          <AlertTriangle className="w-3 h-3 mr-1" />
+        <span className="flex items-center px-2 sm:px-3 py-1 text-xs font-medium bg-red-100 text-red-800 rounded-full">
+          <AlertTriangle className="w-3 sm:w-4 h-3 sm:h-4 mr-1" />
           Completed
         </span>
       );
     } else if (diff < 3) {
       return (
-        <span className="flex items-center px-3 py-1 text-xs font-medium bg-amber-100 text-amber-800 rounded-full">
-          <Clock className="w-3 h-3 mr-1" />
+        <span className="flex items-center px-2 sm:px-3 py-1 text-xs font-medium bg-amber-100 text-amber-800 rounded-full">
+          <Clock className="w-3 sm:w-4 h-3 sm:h-4 mr-1" />
           Urgent
         </span>
       );
     } else if (diff < 7) {
       return (
-        <span className="flex items-center px-3 py-1 text-xs font-medium bg-blue-100 text-blue-800 rounded-full">
-          <Info className="w-3 h-3 mr-1" />
+        <span className="flex items-center px-2 sm:px-3 py-1 text-xs font-medium bg-blue-100 text-blue-800 rounded-full">
+          <Info className="w-3 sm:w-4 h-3 sm:h-4 mr-1" />
           This Week
         </span>
       );
     } else {
       return (
-        <span className="flex items-center px-3 py-1 text-xs font-medium bg-green-100 text-green-800 rounded-full">
-          <Check className="w-3 h-3 mr-1" />
+        <span className="flex items-center px-2 sm:px-3 py-1 text-xs font-medium bg-green-100 text-green-800 rounded-full">
+          <Check className="w-3 sm:w-4 h-3 sm:h-4 mr-1" />
           Upcoming
         </span>
       );
@@ -375,6 +377,7 @@ const ExerciseManagement = ({ onLogout, userName }) => {
       setLoading(false);
     }
   };
+
   const handleArchiveExercise = async (exerciseId) => {
     try {
       setLoading(true);
@@ -412,6 +415,7 @@ const ExerciseManagement = ({ onLogout, userName }) => {
       setLoading(false);
     }
   };
+
   const uploadFiles = async (exerciseId) => {
     for (const file of selectedFiles) {
       const formData = new FormData();
@@ -579,14 +583,14 @@ const ExerciseManagement = ({ onLogout, userName }) => {
   };
 
   const toggleExerciseExpand = (id) => {
-    setExpandedExerciseId: setExpandedExerciseId(expandedExerciseId === id ? null : id);
+    setExpandedExerciseId(expandedExerciseId === id ? null : id);
   };
 
   const mockSubmissions = [
     { id: 1, studentName: 'Emma Martin', submittedAt: '2025-04-30T10:15:00', status: 'submitted', grade: null },
     { id: 2, studentName: 'Lucas Dubois', submittedAt: '2025-04-29T16:42:00', status: 'graded', grade: 17 },
     { id: 3, studentName: 'Sarah Legrand', submittedAt: '2025-04-28T09:05:00', status: 'graded', grade: 15 },
-    { id: 4, studentName: 'Thomas Petit', submittedAt: null, status: 'not_submitted', grade: null }
+    { id: 4, studentName: 'Thomas Petit', submittedAt: null, status: 'no_submitted', grade: null }
   ];
 
   const viewSubmissions = (exerciseId) => {
@@ -600,21 +604,21 @@ const ExerciseManagement = ({ onLogout, userName }) => {
       
       {deleteDialogOpen && (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-          <div className="bg-white rounded-xl shadow-xl p-6 max-w-md w-full mx-4">
-            <h3 className="text-xl font-bold text-gray-900 mb-4">Confirm Deletion</h3>
-            <p className="text-gray-600 mb-6">
+          <div className="bg-white rounded-xl shadow-xl p-4 sm:p-6 max-w-md w-full mx-4">
+            <h3 className="text-lg sm:text-xl font-bold text-gray-900 mb-4">Confirm Deletion</h3>
+            <p className="text-gray-600 text-sm sm:text-base mb-6">
               Are you sure you want to delete this file? This action is irreversible.
             </p>
             <div className="flex justify-end space-x-3">
               <button
                 onClick={closeDeleteFileDialog}
-                className="px-4 py-2 bg-gray-200 text-gray-800 rounded-lg hover:bg-gray-300 transition duration-200"
+                className="px-3 sm:px-4 py-2 bg-gray-200 text-gray-800 rounded-lg hover:bg-gray-300 transition duration-200 text-sm sm:text-base"
               >
                 Cancel
               </button>
               <button
                 onClick={handleDeleteFile}
-                className="px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 transition duration-200"
+                className="px-3 sm:px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 transition duration-200 text-sm sm:text-base"
                 disabled={loading}
               >
                 {loading ? "Deleting..." : "Delete"}
@@ -626,24 +630,24 @@ const ExerciseManagement = ({ onLogout, userName }) => {
 
       {deleteExerciseDialogOpen && (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-          <div className="bg-white rounded-xl shadow-xl p-6 max-w-md w-full mx-4">
+          <div className="bg-white rounded-xl shadow-xl p-4 sm:p-6 max-w-md w-full mx-4">
             <div className="bg-red-50 p-3 rounded-lg mb-4">
-              <AlertTriangle className="h-8 w-8 text-red-600 mx-auto" />
+              <AlertTriangle className="h-6 sm:h-8 w-6 sm:w-8 text-red-600 mx-auto" />
             </div>
-            <h3 className="text-xl font-bold text-gray-900 mb-2 text-center">Confirm Deletion</h3>
-            <p className="text-gray-600 mb-6 text-center">
+            <h3 className="text-lg sm:text-xl font-bold text-gray-900 mb-2 text-center">Confirm Deletion</h3>
+            <p className="text-gray-600 text-sm sm:text-base mb-6 text-center">
               Are you sure you want to delete this exercise? All associated files and student submissions will also be deleted.
             </p>
             <div className="flex justify-center space-x-3">
               <button
                 onClick={closeDeleteExerciseDialog}
-                className="px-5 py-2 bg-gray-200 text-gray-800 rounded-lg hover:bg-gray-300 transition duration-200 font-medium"
+                className="px-4 sm:px-5 py-2 bg-gray-200 text-gray-800 rounded-lg hover:bg-gray-300 transition duration-200 text-sm sm:text-base font-medium"
               >
                 Cancel
               </button>
               <button
                 onClick={handleDeleteExercise}
-                className="px-5 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 transition duration-200 font-medium"
+                className="px-4 sm:px-5 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 transition duration-200 text-sm sm:text-base font-medium"
                 disabled={loading}
               >
                 {loading ? "Deleting..." : "Delete"}
@@ -655,34 +659,34 @@ const ExerciseManagement = ({ onLogout, userName }) => {
 
       {fileUrlDialogOpen && (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-          <div className="bg-white rounded-xl shadow-xl p-6 max-w-md w-full mx-4">
+          <div className="bg-white rounded-xl shadow-xl p-4 sm:p-6 max-w-md w-full mx-4">
             <div className="flex justify-between items-center mb-4">
-              <h3 className="text-xl font-bold text-gray-900">Download File</h3>
+              <h3 className="text-lg sm:text-xl font-bold text-gray-900">Download File</h3>
               <button
                 onClick={closeFileUrlDialog}
-                className="p-2 text-gray-500 hover:bg-gray-100 rounded-full transition duration-200"
+                className="p-1 sm:p-2 text-gray-500 hover:bg-gray-100 rounded-full transition duration-200"
               >
-                <X className="w-5 h-5" />
+                <X className="w-4 sm:w-5 h-4 sm:h-5" />
               </button>
             </div>
-            <p className="text-gray-600 mb-6">
+            <p className="text-gray-600 text-sm sm:text-base mb-6">
               You can download the file by clicking the link below:
             </p>
-            <div className="bg-[rgb(107,33,243)] bg-opacity-10 p-4 rounded-lg mb-4">
+            <div className="bg-[rgb(107,33,243)] bg-opacity-10 p-3 sm:p-4 rounded-lg mb-4">
               <a
                 href={selectedFileUrl}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="flex items-center text-[rgb(122,7,180)] hover:text-[rgb(100,11,113)] transition duration-200"
+                className="flex items-center text-[rgb(122,7,180)] hover:text-[rgb(100,11,113)] transition duration-200 text-sm sm:text-base"
               >
-                <Download className="w-5 h-5 mr-2" />
+                <Download className="w-4 sm:w-5 h-4 sm:h-5 mr-2" />
                 <span className="underline">Download File</span>
-                <ExternalLink className="w-4 h-4 ml-2" />
+                <ExternalLink className="w-3 sm:w-4 h-3 sm:h-4 ml-2" />
               </a>
             </div>
             <button
               onClick={closeFileUrlDialog}
-              className="w-full px-4 py-2 bg-gray-200 text-gray-800 rounded-lg hover:bg-gray-300 transition duration-200 mt-2"
+              className="w-full px-3 sm:px-4 py-2 bg-gray-200 text-gray-800 rounded-lg hover:bg-gray-300 transition duration-200 text-sm sm:text-base"
             >
               Close
             </button>
@@ -692,25 +696,25 @@ const ExerciseManagement = ({ onLogout, userName }) => {
 
       {showStudentSubmissions && (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-          <div className="bg-white rounded-xl shadow-xl p-6 max-w-3xl w-full mx-4 max-h-[80vh] overflow-y-auto">
-            <div className="flex justify-between items-center mb-6">
-              <h3 className="text-xl font-bold text-gray-900">Student Submissions</h3>
+          <div className="bg-white rounded-xl shadow-xl p-4 sm:p-6 max-w-3xl w-full mx-4 max-h-[80vh] overflow-y-auto">
+            <div className="flex justify-between items-center mb-4 sm:mb-6">
+              <h3 className="text-lg sm:text-xl font-bold text-gray-900">Student Submissions</h3>
               <button
                 onClick={() => setShowStudentSubmissions(false)}
-                className="p-2 text-gray-500 hover:bg-gray-100 rounded-full transition duration-200"
+                className="p-1 sm:p-2 text-gray-500 hover:bg-gray-100 rounded-full transition duration-200"
               >
-                <X className="w-5 h-5" />
+                <X className="w-4 sm:w-5 h-4 sm:h-5" />
               </button>
             </div>
             
-            <div className="mb-6">
-              <div className="flex items-center space-x-2 mb-2">
-                <div className="w-3 h-3 rounded-full bg-green-500"></div>
-                <span className="text-sm font-medium">Submitted: {currentSubmissions.filter(s => s.status === 'submitted' || s.status === 'graded').length}</span>
-                <div className="w-3 h-3 rounded-full bg-red-500"></div>
-                <span className="text-sm font-medium">Not Submitted: {currentSubmissions.filter(s => s.status === 'not_submitted').length}</span>
-                <div className="w-3 h-3 rounded-full bg-blue-500"></div>
-                <span className="text-sm font-medium">Graded: {currentSubmissions.filter(s => s.status === 'graded').length}</span>
+            <div className="mb-4 sm:mb-6">
+              <div className="flex flex-wrap items-center space-x-2 sm:space-x-4 mb-2">
+                <div className="w-2 sm:w-3 h-2 sm:h-3 rounded-full bg-green-500"></div>
+                <span className="text-xs sm:text-sm font-medium">Submitted: {currentSubmissions.filter(s => s.status === 'submitted' || s.status === 'graded').length}</span>
+                <div className="w-2 sm:w-3 h-2 sm:h-3 rounded-full bg-red-500"></div>
+                <span className="text-xs sm:text-sm font-medium">Not Submitted: {currentSubmissions.filter(s => s.status === 'not_submitted').length}</span>
+                <div className="w-2 sm:w-3 h-2 sm:h-3 rounded-full bg-blue-500"></div>
+                <span className="text-xs sm:text-sm font-medium">Graded: {currentSubmissions.filter(s => s.status === 'graded').length}</span>
               </div>
             </div>
             
@@ -718,18 +722,18 @@ const ExerciseManagement = ({ onLogout, userName }) => {
               <table className="min-w-full bg-white rounded-lg overflow-hidden">
                 <thead className="bg-gray-100">
                   <tr>
-                    <th className="py-3 px-4 text-left text-xs font-medium text-gray-700 uppercase tracking-wider">Student</th>
-                    <th className="py-3 px-4 text-left text-xs font-medium text-gray-700 uppercase tracking-wider">Status</th>
-                    <th className="py-3 px-4 text-left text-xs font-medium text-gray-700 uppercase tracking-wider">Date</th>
-                    <th className="py-3 px-4 text-left text-xs font-medium text-gray-700 uppercase tracking-wider">Grade</th>
-                    <th className OI3className="py-3 px-4 text-left text-xs font-medium text-gray-700 uppercase tracking-wider">Actions</th>
+                    <th className="py-2 sm:py-3 px-3 sm:px-4 text-left text-xs font-medium text-gray-700 uppercase tracking-wider">Student</th>
+                    <th className="py-2 sm:py-3 px-3 sm:px-4 text-left text-xs font-medium text-gray-700 uppercase tracking-wider">Status</th>
+                    <th className="py-2 sm:py-3 px-3 sm:px-4 text-left text-xs font-medium text-gray-700 uppercase tracking-wider">Date</th>
+                    <th className="py-2 sm:py-3 px-3 sm:px-4 text-left text-xs font-medium text-gray-700 uppercase tracking-wider">Grade</th>
+                    <th className="py-2 sm:py-3 px-3 sm:px-4 text-left text-xs font-medium text-gray-700 uppercase tracking-wider">Actions</th>
                   </tr>
                 </thead>
                 <tbody className="divide-y divide-gray-200">
                   {currentSubmissions.map(submission => (
                     <tr key={submission.id} className="hover:bg-gray-50">
-                      <td className="py-3 px-4 text-sm font-medium text-gray-900">{submission.studentName}</td>
-                      <td className="py-3 px-4 text-sm">
+                      <td className="py-2 sm:py-3 px-3 sm:px-4 text-xs sm:text-sm font-medium text-gray-900">{submission.studentName}</td>
+                      <td className="py-2 sm:py-3 px-3 sm:px-4 text-xs sm:text-sm">
                         {submission.status === 'submitted' && (
                           <span className="px-2 py-1 text-xs font-medium bg-green-100 text-green-800 rounded-full">
                             Submitted
@@ -746,22 +750,22 @@ const ExerciseManagement = ({ onLogout, userName }) => {
                           </span>
                         )}
                       </td>
-                      <td className="py-3 px-4 text-sm text-gray-500">
+                      <td className="py-2 sm:py-3 px-3 sm:px-4 text-xs sm:text-sm text-gray-500">
                         {submission.submittedAt ? formatDate(submission.submittedAt) : '-'}
                       </td>
-                      <td className="py-3 px-4 text-sm text-gray-500">
+                      <td className="py-2 sm:py-3 px-3 sm:px-4 text-xs sm:text-sm text-gray-500">
                         {submission.grade !== null ? `${submission.grade}/20` : '-'}
                       </td>
-                      <td className="py-3 px-4 text-sm">
+                      <td className="py-2 sm:py-3 px-3 sm:px-4 text-xs sm:text-sm">
                         <div className="flex space-x-2">
                           {submission.status !== 'not_submitted' && (
                             <button className="p-1 text-[rgb(122,7,180)] hover:bg-[rgb(107,33,243)] hover:bg-opacity-10 rounded transition-colors">
-                              <Eye className="w-4 h-4" />
+                              <Eye className="w-3 sm:w-4 h-3 sm:h-4" />
                             </button>
                           )}
                           {submission.status === 'submitted' && (
                             <button className="p-1 text-green-600 hover:bg-green-50 rounded transition-colors">
-                              <PenTool className="w-4 h-4" />
+                              <PenTool className="w-3 sm:w-4 h-3 sm:h-4" />
                             </button>
                           )}
                         </div>
@@ -772,10 +776,10 @@ const ExerciseManagement = ({ onLogout, userName }) => {
               </table>
             </div>
             
-            <div className="mt-6 flex justify-end">
+            <div className="mt-4 sm:mt-6 flex justify-end">
               <button
                 onClick={() => setShowStudentSubmissions(false)}
-                className="px-4 py-2 bg-gray-200 text-gray-800 rounded-lg hover:bg-gray-300 transition duration-200"
+                className="px-3 sm:px-4 py-2 bg-gray-200 text-gray-800 rounded-lg hover:bg-gray-300 transition duration-200 text-sm sm:text-base"
               >
                 Close
               </button>
@@ -784,87 +788,86 @@ const ExerciseManagement = ({ onLogout, userName }) => {
         </div>
       )}
 
-<header className="bg-white shadow-md">
-  <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
-    <div className="flex justify-between items-center">
-      <div className="flex items-center">
-        <BookOpen className="h-8 w-8 text-[rgb(122,7,180)] mr-3" />
-        <h1 className="text-2xl font-bold text-gray-900">Exercise Management</h1>
-      </div>
-      
-    </div>
-  </div>
-</header>
+      <header className="bg-white shadow-md">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-3 sm:py-4">
+          <div className="flex flex-col sm:flex-row justify-between items-center space-y-3 sm:space-y-0">
+            <div className="flex items-center">
+              <BookOpen className="h-6 sm:h-8 w-6 sm:w-8 text-[rgb(122,7,180)] mr-2 sm:mr-3" />
+              <h1 className="text-xl sm:text-2xl font-bold text-gray-900">Exercise Management</h1>
+            </div>
+          </div>
+        </div>
+      </header>
 
-      <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-        <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mb-8">
-          <div className="bg-white rounded-xl shadow-sm p-5 border border-gray-100">
+      <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 sm:py-8">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6 mb-6 sm:mb-8">
+          <div className="bg-white rounded-xl shadow-sm p-4 sm:p-5 border border-gray-100">
             <div className="flex items-center justify-between">
               <div>
-                <p className="text-sm font-medium text-gray-500 mb-1">Total Exercises</p>
-                <h3 className="text-2xl font-bold text-gray-900">{stats.totalExercises}</h3>
+                <p className="text-xs sm:text-sm font-medium text-gray-500 mb-1">Total Exercises</p>
+                <h3 className="text-xl sm:text-2xl font-bold text-gray-900">{stats.totalExercises}</h3>
               </div>
-              <div className="bg-[rgb(107,33,243)] bg-opacity-20 p-3 rounded-full">
-                <Layers className="h-6 w-6 text-[rgb(122,7,180)]" />
+              <div className="bg-[rgb(107,33,243)] bg-opacity-20 p-2 sm:p-3 rounded-full">
+                <Layers className="h-5 sm:h-6 w-5 sm:w-6 text-[rgb(122,7,180)]" />
               </div>
             </div>
           </div>
           
-          <div className="bg-white rounded-xl shadow-sm p-5 border border-gray-100">
+          <div className="bg-white rounded-xl shadow-sm p-4 sm:p-5 border border-gray-100">
             <div className="flex items-center justify-between">
               <div>
-                <p className="text-sm font-medium text-gray-500 mb-1">Completed Exercises</p>
-                <h3 className="text-2xl font-bold text-gray-900">{stats.completedExercises}</h3>
+                <p className="text-xs sm:text-sm font-medium text-gray-500 mb-1">Completed Exercises</p>
+                <h3 className="text-xl sm:text-2xl font-bold text-gray-900">{stats.completedExercises}</h3>
               </div>
-              <div className="bg-green-100 p-3 rounded-full">
-                <CheckCircle className="h-6 w-6 text-green-600" />
+              <div className="bg-green-100 p-2 sm:p-3 rounded-full">
+                <CheckCircle className="h-5 sm:h-6 w-5 sm:w-6 text-green-600" />
               </div>
             </div>
           </div>
           
-          <div className="bg-white rounded-xl shadow-sm p-5 border border-gray-100">
+          <div className="bg-white rounded-xl shadow-sm p-4 sm:p-5 border border-gray-100">
             <div className="flex items-center justify-between">
               <div>
-                <p className="text-sm font-medium text-gray-500 mb-1">Due Soon</p>
-                <h3 className="text-2xl font-bold text-gray-900">{stats.pendingExercises}</h3>
+                <p className="text-xs sm:text-sm font-medium text-gray-500 mb-1">Due Soon</p>
+                <h3 className="text-xl sm:text-2xl font-bold text-gray-900">{stats.pendingExercises}</h3>
               </div>
-              <div className="bg-yellow-100 p-3 rounded-full">
-                <Clock className="h-6 w-6 text-yellow-600" />
+              <div className="bg-yellow-100 p-2 sm:p-3 rounded-full">
+                <Clock className="h-5 sm:h-6 w-5 sm:w-6 text-yellow-600" />
               </div>
             </div>
           </div>
           
-          <div className="bg-white rounded-xl shadow-sm p-5 border border-gray-100">
+          <div className="bg-white rounded-xl shadow-sm p-4 sm:p-5 border border-gray-100">
             <div className="flex items-center justify-between">
               <div>
-                <p className="text-sm font-medium text-gray-500 mb-1">Upcoming</p>
-                <h3 className="text-2xl font-bold text-gray-900">{stats.upcomingExercises}</h3>
+                <p className="text-xs sm:text-sm font-medium text-gray-500 mb-1">Upcoming</p>
+                <h3 className="text-xl sm:text-2xl font-bold text-gray-900">{stats.upcomingExercises}</h3>
               </div>
-              <div className="bg-blue-100 p-3 rounded-full">
-                <Calendar className="h-6 w-6 text-blue-600" />
+              <div className="bg-blue-100 p-2 sm:p-3 rounded-full">
+                <Calendar className="h-5 sm:h-6 w-5 sm:w-6 text-blue-600" />
               </div>
             </div>
           </div>
         </div>
 
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 sm:gap-8">
           <div className="lg:col-span-1">
-            <div className="bg-white rounded-xl shadow-sm p-6 border border-gray-100">
-              <h2 className="text-xl font-bold text-gray-900 mb-4 flex items-center">
-                <PlusCircle className="w-5 h-5 mr-2 text-[rgb(122,7,180)]" />
+            <div className="bg-white rounded-xl shadow-sm p-4 sm:p-6 border border-gray-100">
+              <h2 className="text-lg sm:text-xl font-bold text-gray-900 mb-4 flex items-center">
+                <PlusCircle className="w-4 sm:w-5 h-4 sm:h-5 mr-2 text-[rgb(122,7,180)]" />
                 New Exercise
               </h2>
               
               <form onSubmit={handleCreateExercise}>
                 <div className="mb-4">
-                  <label className="block text-sm font-medium text-gray-700 mb-1" htmlFor="classeId">
+                  <label className="block text-xs sm:text-sm font-medium text-gray-700 mb-1" htmlFor="classeId">
                     Class
                   </label>
                   <select
                     id="classeId"
                     value={selectedClassId}
                     onChange={(e) => setSelectedClassId(e.target.value)}
-                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[rgb(122,7,180)] focus:border-transparent"
+                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[rgb(122,7,180)] focus:border-transparent text-sm sm:text-base"
                     required
                   >
                     <option value="">Select a class</option>
@@ -877,7 +880,7 @@ const ExerciseManagement = ({ onLogout, userName }) => {
                 </div>
                 
                 <div className="mb-4">
-                  <label className="block text-sm font-medium text-gray-700 mb-1" htmlFor="titre">
+                  <label className="block text-xs sm:text-sm font-medium text-gray-700 mb-1" htmlFor="titre">
                     Title
                   </label>
                   <input
@@ -886,13 +889,13 @@ const ExerciseManagement = ({ onLogout, userName }) => {
                     name="titre"
                     value={exerciseForm.titre}
                     onChange={handleInputChange}
-                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[rgb(122,7,180)] focus:border-transparent"
+                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[rgb(122,7,180)] focus:border-transparent text-sm sm:text-base"
                     required
                   />
                 </div>
                 
                 <div className="mb-4">
-                  <label className="block text-sm font-medium text-gray-700 mb-1" htmlFor="description">
+                  <label className="block text-xs sm:text-sm font-medium text-gray-700 mb-1" htmlFor="description">
                     Description
                   </label>
                   <textarea
@@ -901,13 +904,13 @@ const ExerciseManagement = ({ onLogout, userName }) => {
                     value={exerciseForm.description}
                     onChange={handleInputChange}
                     rows="5"
-                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[rgb(122,7,180)] focus:border-transparent"
+                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[rgb(122,7,180)] focus:border-transparent text-sm sm:text-base"
                     required
                   ></textarea>
                 </div>
                 
                 <div className="mb-4">
-                  <label className="block text-sm font-medium text-gray-700 mb-1" htmlFor="dateLimite">
+                  <label className="block text-xs sm:text-sm font-medium text-gray-700 mb-1" htmlFor="dateLimite">
                     Deadline
                   </label>
                   <input
@@ -916,21 +919,21 @@ const ExerciseManagement = ({ onLogout, userName }) => {
                     name="dateLimite"
                     value={exerciseForm.dateLimite}
                     onChange={handleInputChange}
-                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[rgb(122,7,180)] focus:border-transparent"
+                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[rgb(122,7,180)] focus:border-transparent text-sm sm:text-base"
                     required
                   />
                 </div>
                 
                 <div className="mb-6">
-                  <label className="block text-sm font-medium text-gray-700 mb-1" htmlFor="files">
+                  <label className="block text-xs sm:text-sm font-medium text-gray-700 mb-1" htmlFor="files">
                     Files (optional)
                   </label>
-                  <div className="mt-1 flex justify-center px-6 pt-5 pb-6 border-2 border-gray-300 border-dashed rounded-lg hover:border-[rgb(122,7,180)] transition-colors cursor-pointer">
+                  <div className="mt-1 flex justify-center px-4 sm:px-6 pt-4 sm:pt-5 pb-5 sm:pb-6 border-2 border-gray-300 border-dashed rounded-lg hover:border-[rgb(122,7,180)] transition-colors cursor-pointer">
                     <div className="space-y-1 text-center">
                       <div className="flex justify-center">
-                        <Paperclip className="h-10 w-10 text-gray-400" />
+                        <Paperclip className="h-8 sm:h-10 w-8 sm:w-10 text-gray-400" />
                       </div>
-                      <div className="flex text-sm text-gray-600">
+                      <div className="flex text-xs sm:text-sm text-gray-600">
                         <label
                           htmlFor="files"
                           className="flex items-center justify-center w-full cursor-pointer"
@@ -954,13 +957,13 @@ const ExerciseManagement = ({ onLogout, userName }) => {
                 
                 {selectedFiles.length > 0 && (
                   <div className="mb-4">
-                    <h3 className="text-sm font-medium text-gray-700 mb-2">Selected Files:</h3>
+                    <h3 className="text-xs sm:text-sm font-medium text-gray-700 mb-2">Selected Files:</h3>
                     <ul className="bg-gray-50 rounded-lg divide-y divide-gray-200">
                       {selectedFiles.map((file, index) => (
                         <li key={index} className="flex items-center justify-between py-2 px-3">
                           <div className="flex items-center">
-                            <FileText className="h-4 w-4 text-gray-500 mr-2" />
-                            <span className="text-sm text-gray-700 truncate max-w-[180px]">
+                            <FileText className="h-3 sm:h-4 w-3 sm:w-4 text-gray-500 mr-2" />
+                            <span className="text-xs sm:text-sm text-gray-700 truncate max-w-[150px] sm:max-w-[180px]">
                               {file.name}
                             </span>
                             <span className="text-xs text-gray-500 ml-2">
@@ -972,7 +975,7 @@ const ExerciseManagement = ({ onLogout, userName }) => {
                             onClick={() => removeSelectedFile(index)}
                             className="text-red-500 hover:text-red-700 p-1"
                           >
-                            <X className="h-4 w-4" />
+                            <X className="h-3 sm:h-4 w-3 sm:w-4" />
                           </button>
                         </li>
                       ))}
@@ -982,14 +985,14 @@ const ExerciseManagement = ({ onLogout, userName }) => {
                 
                 <button
                   type="submit"
-                  className="w-full flex items-center justify-center px-4 py-2 bg-[rgb(122,7,180)] text-white rounded-lg hover:bg-[rgb(100,11,113)] focus:outline-none focus:ring-2 focus:ring-[rgb(122,7,180)] focus:ring-offset-2 transition-colors"
+                  className="w-full flex items-center justify-center px-3 sm:px-4 py-2 bg-[rgb(122,7,180)] text-white rounded-lg hover:bg-[rgb(100,11,113)] focus:outline-none focus:ring-2 focus:ring-[rgb(122,7,180)] focus:ring-offset-2 transition-colors text-sm sm:text-base"
                   disabled={loading}
                 >
                   {loading ? (
                     "Creating..."
                   ) : (
                     <>
-                      <PlusCircle className="h-5 w-5 mr-2" />
+                      <PlusCircle className="h-4 sm:h-5 w-4 sm:w-5 mr-2" />
                       Create Exercise
                     </>
                   )}
@@ -999,79 +1002,79 @@ const ExerciseManagement = ({ onLogout, userName }) => {
           </div>
           
           <div className="lg:col-span-2">
-            <div className="bg-white rounded-xl shadow-sm p-6 border border-gray-100">
-            <h2 className="text-xl font-bold text-gray-900 mb-4 flex items-center">
-  <Book className="w-5 h-5 mr-2 text-[rgb(122,7,180)]" />
-  {showArchived ? 'Archived Exercise List' : 'Exercise List'}
-  {selectedClassId && classes.find(c => c.id === parseInt(selectedClassId)) && (
-    <span className="ml-2 text-sm font-normal text-gray-500">
-      - {classes.find(c => c.id === parseInt(selectedClassId)).niveau} {classes.find(c => c.id === parseInt(selectedClassId)).name}
-    </span>
-  )}
-</h2>
+            <div className="bg-white rounded-xl shadow-sm p-4 sm:p-6 border border-gray-100">
+              <h2 className="text-lg sm:text-xl font-bold text-gray-900 mb-4 flex items-center">
+                <Book className="w-4 sm:w-5 h-4 sm:h-5 mr-2 text-[rgb(122,7,180)]" />
+                {showArchived ? 'Archived Exercise List' : 'Exercise List'}
+                {selectedClassId && classes.find(c => c.id === parseInt(selectedClassId)) && (
+                  <span className="ml-2 text-xs sm:text-sm font-normal text-gray-500">
+                    - {classes.find(c => c.id === parseInt(selectedClassId)).niveau} {classes.find(c => c.id === parseInt(selectedClassId)).name}
+                  </span>
+                )}
+              </h2>
               
-{!selectedClassId ? (
-  <div className="text-center py-8">
-    <Users className="h-12 w-12 text-gray-400 mx-auto mb-4" />
-    <h3 className="text-lg font-medium text-gray-900 mb-1">Select a Class</h3>
-    <p className="text-gray-500">
-      Please select a class to view its exercises
-    </p>
-  </div>
-) : exercises.length === 0 ? (
-  <div className="text-center py-8">
-    <Book className="h-12 w-12 text-gray-400 mx-auto mb-4" />
-    <h3 className="text-lg font-medium text-gray-900 mb-1">No Exercises</h3>
-    <p className="text-gray-500">
-      {showArchived ? 'No archived exercises for this class' : 'You haven\'t created any exercises for this class yet'}
-    </p>
-  </div>
+              {!selectedClassId ? (
+                <div className="text-center py-6 sm:py-8">
+                  <Users className="h-10 sm:h-12 w-10 sm:w-12 text-gray-400 mx-auto mb-4" />
+                  <h3 className="text-base sm:text-lg font-medium text-gray-900 mb-1">Select a Class</h3>
+                  <p className="text-gray-500 text-sm sm:text-base">
+                    Please select a class to view its exercises
+                  </p>
+                </div>
+              ) : exercises.length === 0 ? (
+                <div className="text-center py-6 sm:py-8">
+                  <Book className="h-10 sm:h-12 w-10 sm:w-12 text-gray-400 mx-auto mb-4" />
+                  <h3 className="text-base sm:text-lg font-medium text-gray-900 mb-1">No Exercises</h3>
+                  <p className="text-gray-500 text-sm sm:text-base">
+                    {showArchived ? 'No archived exercises for this class' : 'You haven\'t created any exercises for this class yet'}
+                  </p>
+                </div>
               ) : (
                 <div className="space-y-4">
                   {exercises.map((exercise) => (
                     <div key={exercise.id} className="border border-gray-200 rounded-lg overflow-hidden">
-                    <div 
-                      className={`px-4 py-3 flex items-center justify-between cursor-pointer hover:bg-gray-50 transition-colors ${expandedExerciseId === exercise.id ? 'bg-[rgb(107,33,243)] bg-opacity-10' : 'bg-white'}`}
-                      onClick={() => toggleExerciseExpand(exercise.id)}
-                    >
-                      <div className="flex items-center space-x-3">
-                        <div 
-                          className={`w-3 h-3 rounded-full ${isExpired(exercise.dateLimite) ? 'bg-red-400' : 'bg-green-400'}`}
-                        ></div>
-                        <h3 className="font-medium text-gray-900">{exercise.titre}</h3>
-                        <div className="flex space-x-2">
-                          {getStatusBadge(exercise.dateLimite)}
-                          {exercise.archived && (
-                            <span className="flex items-center px-3 py-1 text-xs font-medium bg-gray-100 text-gray-800 rounded-full">
-                              <Archive className="w-3 h-3 mr-1" />
-                              Archived
-                            </span>
-                          )}
+                      <div 
+                        className={`px-3 sm:px-4 py-2 sm:py-3 flex items-center justify-between cursor-pointer hover:bg-gray-50 transition-colors ${expandedExerciseId === exercise.id ? 'bg-[rgb(107,33,243)] bg-opacity-10' : 'bg-white'}`}
+                        onClick={() => toggleExerciseExpand(exercise.id)}
+                      >
+                        <div className="flex flex-col sm:flex-row items-start sm:items-center space-y-2 sm:space-y-0 sm:space-x-3">
+                          <div 
+                            className={`w-2 sm:w-3 h-2 sm:h-3 rounded-full ${isExpired(exercise.dateLimite) ? 'bg-red-400' : 'bg-green-400'}`}
+                          ></div>
+                          <h3 className="font-medium text-gray-900 text-sm sm:text-base">{exercise.titre}</h3>
+                          <div className="flex space-x-2">
+                            {getStatusBadge(exercise.dateLimite)}
+                            {exercise.archived && (
+                              <span className="flex items-center px-2 sm:px-3 py-1 text-xs font-medium bg-gray-100 text-gray-800 rounded-full">
+                                <Archive className="w-3 sm:w-4 h-3 sm:h-4 mr-1" />
+                                Archived
+                              </span>
+                            )}
+                          </div>
+                        </div>
+                        <div className="flex items-center">
+                          <span className="text-xs sm:text-sm text-gray-500 mr-2 sm:mr-3">
+                            {formatDate(exercise.dateLimite)}
+                          </span>
+                          <div 
+                            className={`p-1 rounded-full ${expandedExerciseId === exercise.id ? 'bg-[rgb(107,33,243)] bg-opacity-20' : 'bg-gray-100'}`}
+                          >
+                            {expandedExerciseId === exercise.id ? (
+                              <ChevronUp className={`h-4 sm:h-5 w-4 sm:w-5 ${expandedExerciseId === exercise.id ? 'text-[rgb(122,7,180)]' : 'text-gray-500'}`} />
+                            ) : (
+                              <ChevronDown className="h-4 sm:h-5 w-4 sm:w-5 text-gray-500" />
+                            )}
+                          </div>
                         </div>
                       </div>
-                      <div className="flex items-center">
-                        <span className="text-sm text-gray-500 mr-3">
-                          {formatDate(exercise.dateLimite)}
-                        </span>
-                        <div 
-                          className={`p-1 rounded-full ${expandedExerciseId === exercise.id ? 'bg-[rgb(107,33,243)] bg-opacity-20' : 'bg-gray-100'}`}
-                        >
-                          {expandedExerciseId === exercise.id ? (
-                            <ChevronUp className={`h-5 w-5 ${expandedExerciseId === exercise.id ? 'text-[rgb(122,7,180)]' : 'text-gray-500'}`} />
-                          ) : (
-                            <ChevronDown className="h-5 w-5 text-gray-500" />
-                          )}
-                        </div>
-                      </div>
-                    </div>
-                   
-                    {expandedExerciseId === exercise.id && (
-    <div className="border-t border-gray-200 px-4 py-4 bg-white">
-      {editExerciseId === exercise.id ? (
+                      
+                      {expandedExerciseId === exercise.id && (
+                        <div className="border-t border-gray-200 px-3 sm:px-4 py-3 sm:py-4 bg-white">
+                          {editExerciseId === exercise.id ? (
                             <div className="mb-4">
                               <form>
                                 <div className="mb-3">
-                                  <label className="block text-sm font-medium text-gray-700 mb-1" htmlFor={`edit-titre-${exercise.id}`}>
+                                  <label className="block text-xs sm:text-sm font-medium text-gray-700 mb-1" htmlFor={`edit-titre-${exercise.id}`}>
                                     Title
                                   </label>
                                   <input
@@ -1080,13 +1083,13 @@ const ExerciseManagement = ({ onLogout, userName }) => {
                                     name="titre"
                                     value={editForm.titre}
                                     onChange={handleEditInputChange}
-                                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[rgb(122,7,180)] focus:border-transparent"
+                                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[rgb(122,7,180)] focus:border-transparent text-sm sm:text-base"
                                     required
                                   />
                                 </div>
                                 
                                 <div className="mb-3">
-                                  <label className="block text-sm font-medium text-gray-700 mb-1" htmlFor={`edit-description-${exercise.id}`}>
+                                  <label className="block text-xs sm:text-sm font-medium text-gray-700 mb-1" htmlFor={`edit-description-${exercise.id}`}>
                                     Description
                                   </label>
                                   <textarea
@@ -1095,13 +1098,13 @@ const ExerciseManagement = ({ onLogout, userName }) => {
                                     value={editForm.description}
                                     onChange={handleEditInputChange}
                                     rows="3"
-                                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[rgb(122,7,180)] focus:border-transparent"
+                                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[rgb(122,7,180)] focus:border-transparent text-sm sm:text-base"
                                     required
                                   ></textarea>
                                 </div>
                                 
                                 <div className="mb-4">
-                                  <label className="block text-sm font-medium text-gray-700 mb-1" htmlFor={`edit-dateLimite-${exercise.id}`}>
+                                  <label className="block text-xs sm:text-sm font-medium text-gray-700 mb-1" htmlFor={`edit-dateLimite-${exercise.id}`}>
                                     Deadline
                                   </label>
                                   <input
@@ -1110,7 +1113,7 @@ const ExerciseManagement = ({ onLogout, userName }) => {
                                     name="dateLimite"
                                     value={editForm.dateLimite}
                                     onChange={handleEditInputChange}
-                                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[rgb(122,7,180)] focus:border-transparent"
+                                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[rgb(122,7,180)] focus:border-transparent text-sm sm:text-base"
                                     required
                                   />
                                 </div>
@@ -1119,17 +1122,17 @@ const ExerciseManagement = ({ onLogout, userName }) => {
                                   <button
                                     type="button"
                                     onClick={() => handleUpdateExercise(exercise.id)}
-                                    className="flex items-center px-3 py-2 bg-[rgb(122,7,180)] text-white rounded-lg hover:bg-[rgb(100,11,113)] transition-colors"
+                                    className="flex items-center px-3 py-2 bg-[rgb(122,7,180)] text-white rounded-lg hover:bg-[rgb(100,11,113)] transition-colors text-sm sm:text-base"
                                   >
-                                    <Save className="h-4 w-4 mr-1" />
+                                    <Save className="h-3 sm:h-4 w-3 sm:w-4 mr-1" />
                                     Save
                                   </button>
                                   <button
                                     type="button"
                                     onClick={handleCancelEdit}
-                                    className="flex items-center px-3 py-2 bg-gray-200 text-gray-700 rounded-lg hover:bg-gray-300 transition-colors"
+                                    className="flex items-center px-3 py-2 bg-gray-200 text-gray-700 rounded-lg hover:bg-gray-300 transition-colors text-sm sm:text-base"
                                   >
-                                    <X className="h-4 w-4 mr-1" />
+                                    <X className="h-3 sm:h-4 w-3 sm:w-4 mr-1" />
                                     Cancel
                                   </button>
                                 </div>
@@ -1138,14 +1141,14 @@ const ExerciseManagement = ({ onLogout, userName }) => {
                           ) : (
                             <>
                               <div className="mb-4">
-            <h4 className="text-sm font-medium text-gray-700 mb-1">Description:</h4>
-            <p className="text-gray-600 whitespace-pre-line">{exercise.description}</p>
-          </div>
+                                <h4 className="text-xs sm:text-sm font-medium text-gray-700 mb-1">Description:</h4>
+                                <p className="text-gray-600 text-sm sm:text-base whitespace-pre-line">{exercise.description}</p>
+                              </div>
                               
                               <div className="mb-4">
-                                <h4 className="text-sm font-medium text-gray-700 mb-1">Deadline:</h4>
-                                <p className="text-gray-600 flex items-center">
-                                  <Calendar className="h-4 w-4 mr-1 text-gray-500" />
+                                <h4 className="text-xs sm:text-sm font-medium text-gray-700 mb-1">Deadline:</h4>
+                                <p className="text-gray-600 text-sm sm:text-base flex items-center">
+                                  <Calendar className="h-3 sm:h-4 w-3 sm:w-4 mr-1 text-gray-500" />
                                   {formatDate(exercise.dateLimite)}
                                 </p>
                               </div>
@@ -1154,7 +1157,7 @@ const ExerciseManagement = ({ onLogout, userName }) => {
                           
                           {exercise.fichiers && exercise.fichiers.length > 0 && (
                             <div className="mb-4">
-                              <h4 className="text-sm font-medium text-gray-700 mb-2">Files:</h4>
+                              <h4 className="text-xs sm:text-sm font-medium text-gray-700 mb-2">Files:</h4>
                               <ul className="bg-gray-50 rounded-lg divide-y divide-gray-200">
                                 {exercise.fichiers.map((file) => (
                                   <li key={file.id} className="flex items-center justify-between py-2 px-3">
@@ -1162,15 +1165,15 @@ const ExerciseManagement = ({ onLogout, userName }) => {
                                       className="flex items-center cursor-pointer hover:text-[rgb(122,7,180)] transition-colors"
                                       onClick={() => handleFileClick(file)}
                                     >
-                                      <FileText className="h-4 w-4 text-gray-500 mr-2" />
-                                      <span className="text-sm">{file.nom}</span>
+                                      <FileText className="h-3 sm:h-4 w-3 sm:w-4 text-gray-500 mr-2" />
+                                      <span className="text-xs sm:text-sm">{file.nom}</span>
                                     </div>
                                     <button
                                       type="button"
                                       onClick={() => openDeleteFileDialog(file.id)}
                                       className="text-red-500 hover:text-red-700 p-1"
                                     >
-                                      <Trash2 className="h-4 w-4" />
+                                      <Trash2 className="h-3 sm:h-4 w-3 sm:w-4" />
                                     </button>
                                   </li>
                                 ))}
@@ -1179,13 +1182,13 @@ const ExerciseManagement = ({ onLogout, userName }) => {
                           )}
                           
                           <div className="mb-4">
-                            <h4 className="text-sm font-medium text-gray-700 mb-2">Add Files:</h4>
-                            <div className="flex">
+                            <h4 className="text-xs sm:text-sm font-medium text-gray-700 mb-2">Add Files:</h4>
+                            <div className="flex flex-wrap gap-2">
                               <label
                                 htmlFor={`add-files-${exercise.id}`}
-                                className="flex items-center justify-center cursor-pointer px-3 py-2 bg-gray-100 text-gray-700 rounded-lg hover:bg-gray-200 transition-colors mr-2"
+                                className="flex items-center justify-center cursor-pointer px-3 py-2 bg-gray-100 text-gray-700 rounded-lg hover:bg-gray-200 transition-colors text-sm sm:text-base"
                               >
-                                <Paperclip className="h-4 w-4 mr-1" />
+                                <Paperclip className="h-3 sm:h-4 w-3 sm:w-4 mr-1" />
                                 <span>Select</span>
                                 <input
                                   id={`add-files-${exercise.id}`}
@@ -1199,10 +1202,10 @@ const ExerciseManagement = ({ onLogout, userName }) => {
                                 <button
                                   type="button"
                                   onClick={(e) => handleAddFilesToExercise(e, exercise.id)}
-                                  className="flex items-center px-3 py-2 bg-[rgb(122,7,180)] text-white rounded-lg hover:bg-[rgb(100,11,113)] transition-colors"
+                                  className="flex items-center px-3 py-2 bg-[rgb(122,7,180)] text-white rounded-lg hover:bg-[rgb(100,11,113)] transition-colors text-sm sm:text-base"
                                   disabled={loading}
                                 >
-                                  <PlusCircle className="h-4 w-4 mr-1" />
+                                  <PlusCircle className="h-3 sm:h-4 w-3 sm:w-4 mr-1" />
                                   {loading ? "Adding..." : `Add (${selectedFiles.length})`}
                                 </button>
                               )}
@@ -1212,25 +1215,42 @@ const ExerciseManagement = ({ onLogout, userName }) => {
                           <div className="flex flex-wrap gap-2 mt-4">
                             <button
                               onClick={() => viewSubmissions(exercise.id)}
-                              className="flex items-center px-3 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
+                              className="flex items-center px-3 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors text-sm sm:text-base"
                             >
-                              <Users className="h-4 w-4 mr-1" />
+                              <Users className="h-3 sm:h-4 w-3 sm:w-4 mr-1" />
                               Student Submissions
                             </button>
                             
                             <button
                               onClick={() => handleEditExercise(exercise)}
-                              className="flex items-center px-3 py-2 bg-amber-500 text-white rounded-lg hover:bg-amber-600 transition-colors"
+                              className="flex items-center px-3 py-2 bg-amber-500 text-white rounded-lg hover:bg-amber-600 transition-colors text-sm sm:text-base"
                             >
-                              <Edit className="h-4 w-4 mr-1" />
+                              <Edit className="h-3 sm:h-4 w-3 sm:h-4 mr-1" />
                               Edit
                             </button>
+                            {exercise.archived ? (
+                            <button
+                              onClick={() => handleDearchiveExercise(exercise.id)}
+                              className="flex items-center px-3 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-colors text-sm sm:text-base"
+                            >
+                              <Archive className="h-3 sm:h-4 w-3 sm:h-4 mr-1" />
+                              Dearchive
+                            </button>
+                          ) : (
+                            <button
+                              onClick={() => handleArchiveExercise(exercise.id)}
+                              className="flex items-center px-3 py-2 bg-gray-600 text-white rounded-lg hover:bg-gray-700 transition-colors text-sm sm:text-base"
+                            >
+                              <Archive className="h-3 sm:h-4 w-3 sm:h-4 mr-1" />
+                              Archive
+                            </button>
+                          )}
                             
                             <button
                               onClick={() => openDeleteExerciseDialog(exercise.id)}
-                              className="flex items-center px-3 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 transition-colors"
+                              className="flex items-center px-3 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 transition-colors text-sm sm:text-base"
                             >
-                              <Trash2 className="h-4 w-4 mr-1" />
+                              <Trash2 className="h-3 sm:h-4 w-3 sm:h-4 mr-1" />
                               Delete
                             </button>
                           </div>

@@ -4,6 +4,8 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.*;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Set;
 
 @Entity
@@ -14,13 +16,13 @@ public class Classe {
 
     private String nom;
 
-    public Classe(Long id, String nom, Set<Utilisateur> etudiants, Set<Annonce> annonces, Set<Exercice> exercices, Utilisateur enseignant) {
+    public Classe(Long id, String nom, Set<Utilisateur> etudiants, Set<Annonce> annonces, Set<Exercice> exercices , List<Utilisateur> enseignants) {
         this.id = id;
         this.nom = nom;
         this.etudiants = etudiants;
         this.annonces = annonces;
         this.exercices = exercices;
-        this.enseignant = enseignant;
+        this.enseignants = enseignants;
     }
 
     public Classe() {
@@ -66,13 +68,6 @@ public class Classe {
         this.exercices = exercices;
     }
 
-    public Utilisateur getEnseignant() {
-        return enseignant;
-    }
-
-    public void setEnseignant(Utilisateur enseignant) {
-        this.enseignant = enseignant;
-    }
 
     @OneToMany(mappedBy = "classe", fetch = FetchType.EAGER)
     private Set<Utilisateur> etudiants;
@@ -84,9 +79,29 @@ public class Classe {
     @OneToMany(mappedBy = "classe")
     private Set<Exercice> exercices;
 
-    @ManyToOne
-    @JoinColumn(name = "enseignant_id")
-    private Utilisateur enseignant;
+    @ManyToMany
+    @JoinTable(
+            name = "classe_enseignants",
+            joinColumns = @JoinColumn(name = "classe_id"),
+            inverseJoinColumns = @JoinColumn(name = "enseignant_id")
+    )
+    private List<Utilisateur> enseignants = new ArrayList<>();
+
+    public List<Utilisateur> getEnseignants() {
+        return enseignants;
+    }
+
+    public void setEnseignants(List<Utilisateur> enseignants) {
+        this.enseignants = enseignants;
+    }
+
+    public Set<LiveStreaming> getLiveStreamings() {
+        return liveStreamings;
+    }
+
+    public void setLiveStreamings(Set<LiveStreaming> liveStreamings) {
+        this.liveStreamings = liveStreamings;
+    }
 
     @OneToMany(mappedBy = "classe")
     private Set<LiveStreaming> liveStreamings;

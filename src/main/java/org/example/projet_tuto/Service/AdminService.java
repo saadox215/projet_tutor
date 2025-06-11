@@ -147,64 +147,92 @@ public class AdminService {
         userRepository.delete(user);
     }
     // ==================== CLASS MANAGEMENT ====================
+    @Transactional
     public ClassDTO createClass(ClassDTO classDTO) {
-        Classe classe = new Classe();
-        classe.setNom(classDTO.getName());
-
-        if (classDTO.getProfessorId() != null) {
-            Utilisateur enseignant = userRepository.findById(
-                            classDTO.getProfessorId())
-                    .orElseThrow(() -> new RuntimeException("Enseignant non trouvé ou n'est pas un professeur"));
-            classe.setEnseignant(enseignant);
-        }
-
-        Classe savedClasse = classRepository.save(classe);
-        return mapToClassDTO(savedClasse);
-    }
-
-    public ClassDTO updateClass(Long id, ClassDTO classDTO) {
-        Classe classe = classRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Classe non trouvée"));
-
-        if (classDTO.getName() != null) {
+        try {
+            Classe classe = new Classe();
             classe.setNom(classDTO.getName());
-        }
+            classe.setEnseignants(new ArrayList<>()); // Initialize the list
 
-        if (classDTO.getProfessorId() != null) {
-            Utilisateur enseignant = userRepository.findById(
-                            classDTO.getProfessorId())
-                    .orElseThrow(() -> new RuntimeException("Enseignant non trouvé ou n'est pas un professeur"));
-            classe.setEnseignant(enseignant);
-        }
+            // Add multiple professors if provided
+            if (classDTO.getProfessorIds() != null && !classDTO.getProfessorIds().isEmpty()) {
+                List<Utilisateur> enseignants = userRepository.findAllById(classDTO.getProfessorIds())
+                        .stream()
+                        .filter(enseignant -> enseignant != null)
+                        .collect(Collectors.toList());
 
-        Classe updatedClasse = classRepository.save(classe);
-        return mapToClassDTO(updatedClasse);
+                if (enseignants.size() != classDTO.getProfessorIds().size()) {
+                    throw new RuntimeException("One or more enseignants not found");
+                }
+
+                classe.getEnseignants().addAll(enseignants);
+            }
+
+            Classe savedClasse = classRepository.save(classe);
+            return mapToClassDTO(savedClasse);
+        } catch (Exception e) {
+            throw new RuntimeException("Failed to create class", e);
+        }
+    }
+@Transactional
+    public ClassDTO updateClass(Long id, ClassDTO classDTO) {
+        try {
+            Classe classe = classRepository.findById(id)
+                    .orElseThrow(() -> new RuntimeException("Classe non trouvée"));
+
+            if (classDTO.getName() != null) {
+                classe.setNom(classDTO.getName());
+            }
+
+            // Update professors if provided
+            if (classDTO.getProfessorIds() != null) {
+                // Clear existing professors and add new ones
+                classe.getEnseignants().clear();
+                if (!classDTO.getProfessorIds().isEmpty()) {
+                    List<Utilisateur> enseignants = userRepository.findAllById(classDTO.getProfessorIds())
+                            .stream()
+                            .filter(enseignant -> enseignant != null)
+                            .collect(Collectors.toList());
+
+                        if (enseignants.size() != classDTO.getProfessorIds().size()) {
+                        throw new RuntimeException("One or more enseignants not found");
+                    }
+
+                    classe.getEnseignants().addAll(enseignants);
+                }
+            }
+
+            Classe updatedClasse = classRepository.save(classe);
+            return mapToClassDTO(updatedClasse);
+        } catch (Exception e) {;
+            throw new RuntimeException("Failed to update class", e);
+        }
     }
 
     @Transactional
     public void deleteClass(Long id) {
-        Classe classe = classRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Classe non trouvée avec l'ID: " + id));
+        try {
+            Classe classe = classRepository.findById(id)
+                    .orElseThrow(() -> new RuntimeException("Classe non trouvée avec l'ID: " + id));
 
-        classe.getEtudiants().size();
-        classe.getAnnonces().size();
-        classe.getExercices().size();
+            // Initialize collections to avoid LazyInitializationException
+            classe.getEtudiants().size();
+            classe.getAnnonces().size();
+            classe.getExercices().size();
 
-        System.out.println("Classe trouvée : " + classe.getId());
-        System.out.println("Nombre d'étudiants : " + classe.getEtudiants().size());
-        System.out.println("Nombre d'annonces : " + classe.getAnnonces().size());
-        System.out.println("Nombre d'exercices : " + classe.getExercices().size());
 
-        if (!classe.getEtudiants().isEmpty() || !classe.getAnnonces().isEmpty() || !classe.getExercices().isEmpty()) {
-            throw new RuntimeException("Impossible de supprimer : la classe contient des étudiants, annonces ou exercices");
+            if (!classe.getEtudiants().isEmpty() || !classe.getAnnonces().isEmpty() || !classe.getExercices().isEmpty()) {
+                throw new RuntimeException("Impossible de supprimer : la classe contient des étudiants, annonces ou exercices");
+            }
+
+            classRepository.delete(classe);
+        } catch (Exception e) {
+            throw new RuntimeException("Failed to delete class", e);
         }
-
-        classRepository.delete(classe);
-        System.out.println("Classe supprimée avec succès !");
     }
 
 
-
+@Transactional
     public List<ClassDTO> getAllClasses() {
         return classRepository.findAll().stream()
                 .map(this::mapToClassDTO)
@@ -269,15 +297,22 @@ public class AdminService {
 
         int studentCount = studentDTOs.size();
 
-        String professorName = classe.getEnseignant() != null
-                ? classe.getEnseignant().getName() + " " + classe.getEnseignant().getPrenom()
-                : "Not Assigned";
+        List<String> professorNames = classe.getEnseignants() != null
+                ? classe.getEnseignants().stream()
+                .map(enseignant -> enseignant.getName() + " " + enseignant.getPrenom())
+                .collect(Collectors.toList())
+                : Collections.singletonList("Not Assigned");
+
 
         return ClassDTO.builder()
                 .id(classe.getId())
                 .name(classe.getNom())
-                .professorId(classe.getEnseignant() != null ? classe.getEnseignant().getId() : null)
-                .professorName(professorName)
+                .professorIds(classe.getEnseignants() != null
+                        ? classe.getEnseignants().stream()
+                        .map(Utilisateur::getId)
+                        .collect(Collectors.toList())
+                        : Collections.emptyList())
+                .professorName(professorNames)
                 .students(studentDTOs)
                 .studentCount(studentCount)
                 .build();

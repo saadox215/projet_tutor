@@ -553,76 +553,77 @@ const filteredQcms = qcms.filter(qcm => {
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative -mt-6">
         {/* Dashboard Cards */}
         {!showForm && (
-          <motion.div 
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.3 }}
-            className="grid grid-cols-1 md:grid-cols-4 gap-6 mb-6"
-          >
-            <div className="bg-white rounded-xl shadow-md p-6 border border-gray-100">
-              <div className="flex items-center">
-                <div className="bg-emerald-100 p-3 rounded-lg">
-                  <DocumentTextIcon className="h-6 w-6 text-emerald-600" />
-                </div>
-                <div className="ml-4">
-                  <h3 className="text-lg font-semibold text-gray-800">Total Quizzes</h3>
-                  <div className="mt-1 flex items-baseline">
-                    <p className="text-2xl font-bold text-emerald-600">{qcms.length}</p>
-                    <p className="ml-2 text-sm text-gray-500">created</p>
-                  </div>
-                </div>
+      <motion.div 
+        initial={{ opacity: 0, y: 20 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ delay: 0.3 }}
+        className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-4 sm:gap-6 mb-6"
+      >
+        <div className="bg-white rounded-xl shadow-md p-4 sm:p-6 border border-gray-100">
+          <div className="flex items-center">
+            <div className="bg-emerald-100 p-2 sm:p-3 rounded-lg">
+              <DocumentTextIcon className="h-5 sm:h-6 w-5 sm:w-6 text-emerald-600" />
+            </div>
+            <div className="ml-3 sm:ml-4">
+              <h3 className="text-base sm:text-lg font-semibold text-gray-800">Total Quizzes</h3>
+              <div className="mt-1 flex items-baseline">
+                <p className="text-xl sm:text-2xl font-bold text-emerald-600">{qcms.length}</p>
+                <p className="ml-2 text-xs sm:text-sm text-gray-500">created</p>
               </div>
             </div>
-            
-            <div className="bg-white rounded-xl shadow-md p-6 border border-gray-100">
-              <div className="flex items-center">
-                <div className="bg-violet-100 p-3 rounded-lg">
-                  <QuestionMarkCircleIcon className="h-6 w-6 text-violet-600" />
-                </div>
-                <div className="ml-4">
-                  <h3 className="text-lg font-semibold text-gray-800">Total Questions</h3>
-                  <div className="mt-1 flex items-baseline">
-                    <p className="text-2xl font-bold text-violet-600">{getTotalQuestions()}</p>
-                    <p className="ml-2 text-sm text-gray-500">across all quizzes</p>
-                  </div>
-                </div>
+          </div>
+        </div>
+        
+        <div className="bg-white rounded-xl shadow-md p-4 sm:p-6 border border-gray-100">
+          <div className="flex items-center">
+            <div className="bg-violet-100 p-2 sm:p-3 rounded-lg">
+              <QuestionMarkCircleIcon className="h-5 sm:h-6 w-5 sm:w-6 text-violet-600" />
+            </div>
+            <div className="ml-3 sm:ml-4">
+              <h3 className="text-base sm:text-lg font-semibold text-gray-800">Total Questions</h3>
+              <div className="mt-1 flex items-baseline">
+                <p className="text-xl sm:text-2xl font-bold text-violet-600">{getTotalQuestions()}</p>
+                <p className="ml-2 text-xs sm:text-sm text-gray-500">across all quizzes</p>
               </div>
             </div>
-            
-            <div className="bg-white rounded-xl shadow-md p-6 border border-gray-100">
-              <div className="flex items-center">
-                <div className="bg-amber-100 p-3 rounded-lg">
-                  <UserGroupIcon className="h-6 w-6 text-amber-600" />
-                </div>
-                <div className="ml-4">
-                  <h3 className="text-lg font-semibold text-gray-800">Active Classes</h3>
-                  <div className="mt-1 flex items-baseline">
-                    <p className="text-2xl font-bold text-amber-600">{classes.length}</p>
-                    <p className="ml-2 text-sm text-gray-500">with quizzes</p>
-                  </div>
-                </div>
+          </div>
+        </div>
+        
+        <div className="bg-white rounded-xl shadow-md p-4 sm:p-6 border border-gray-100">
+          <div className="flex items-center">
+            <div className="bg-amber-100 p-2 sm:p-3 rounded-lg">
+              <UserGroupIcon className="h-5 sm:h-6 w-5 sm:w-6 text-amber-600" />
+            </div>
+            <div className="ml-3 sm:ml-4">
+              <h3 className="text-base sm:text-lg font-semibold text-gray-800">Active Classes</h3>
+              <div className="mt-1 flex items-baseline">
+                <p className="text-xl sm:text-2xl font-bold text-amber-600">{classes.length}</p>
+                <p className="ml-2 text-xs sm:text-sm text-gray-500">with quizzes</p>
               </div>
             </div>
-            
-            <div className="bg-white rounded-xl shadow-md p-6 border border-gray-100">
-              <div className="flex items-center">
-                <div className="bg-sky-100 p-3 rounded-lg">
-                  <CalendarIcon className="h-6 w-6 text-sky-600" />
-                </div>
-                <div className="ml-4">
-                  <h3 className="text-lg font-semibold text-gray-800">Latest Quiz</h3>
-                  <div className="mt-1">
-                    <p className="text-lg font-bold text-sky-600 truncate max-w-xs">
-                      {qcms.length > 0 ? 
-                        qcms.sort((a, b) => new Date(b.dateCreation) - new Date(a.dateCreation))[0]?.titre || "No quizzes" 
-                        : "No quizzes"}
-                    </p>
-                  </div>
-                </div>
+          </div>
+        </div>
+        
+        <div className="bg-white rounded-xl shadow-md p-4 sm:p-6 border border-gray-100">
+          <div className="flex items-center">
+            <div className="bg-sky-100 p-2 sm:p-3 rounded-lg">
+              <CalendarIcon className="h-5 sm:h-6 w-5 sm:w-6 text-sky-600" />
+            </div>
+            <div className="ml-3 sm:ml-4">
+              <h3 className="text-base sm:text-lg font-semibold text-gray-800">Latest Quiz</h3>
+              <div className="mt-1">
+                <p className="text-base sm:text-lg font-bold text-sky-600 truncate max-w-xs">
+                  {qcms.length > 0 ? 
+                    qcms.sort((a, b) => new Date(b.dateCreation) - new Date(a.dateCreation))[0]?.titre || "No quizzes" 
+                    : "No quizzes"}
+                </p>
               </div>
             </div>
-          </motion.div>
-        )}
+          </div>
+        </div>
+      </motion.div>
+    )}
+  
 
         {/* QCM Form */}
         <AnimatePresence>
