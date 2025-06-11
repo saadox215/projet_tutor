@@ -2,8 +2,10 @@ package org.example.projet_tuto.Controllers;
 
 import org.example.projet_tuto.DTOS.AnnonceDTO;
 import org.example.projet_tuto.DTOS.ExerciceDTO;
+import org.example.projet_tuto.DTOS.QCMDTO;
 import org.example.projet_tuto.Repository.UtilisateurRepository;
 import org.example.projet_tuto.Service.AnnonceStudentService;
+import org.example.projet_tuto.Service.StudentqcmService;
 import org.example.projet_tuto.entities.Utilisateur;
 import org.example.projet_tuto.security.JwtTokenProvider;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -12,6 +14,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.Set;
 
 @RestController
 @RequestMapping("/api/etudiant")
@@ -19,11 +22,13 @@ import java.util.List;
 public class StudentController {
     private final AnnonceStudentService annonceStudentService;
     private final UtilisateurRepository utilisateurRepository;
+    private final StudentqcmService studentqcmService;
     @Autowired
     private JwtTokenProvider jwtTokenProvider;
-    public StudentController(AnnonceStudentService annonceStudentService, UtilisateurRepository utilisateurRepository) {
+    public StudentController(AnnonceStudentService annonceStudentService, UtilisateurRepository utilisateurRepository, StudentqcmService studentqcmService) {
         this.annonceStudentService = annonceStudentService;
         this.utilisateurRepository = utilisateurRepository;
+        this.studentqcmService = studentqcmService;
     }
     // ==================== STUDENT ANNOUNCEMENTS ====================
      @GetMapping("/annonces")
@@ -138,4 +143,27 @@ public class StudentController {
         }
         return ResponseEntity.ok(annonceStudentService.getLiveStreamings(student.getId()));
     }
+    @GetMapping("/qcms")
+    public ResponseEntity<?> getStudentQCMs(@RequestHeader("Authorization") String authHeader) {
+        if (authHeader == null || !authHeader.startsWith("Bearer ")) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Invalid or missing Authorization header");
+        }
+
+        String token = authHeader.replace("Bearer ", "");
+
+        if (!jwtTokenProvider.validateToken(token)) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Invalid or expired token");
+        }
+
+        String email = jwtTokenProvider.getUsernameFromJWT(token);
+        System.out.println("Extracted email: " + email);
+
+        Utilisateur student = utilisateurRepository.findByEmail(email);
+        if (student == null) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("User not found");
+        }
+        Set<QCMDTO> qcms = studentqcmService.getQcmByStudent(student.getId());
+        return ResponseEntity.ok(qcms);
+    }
+
 }

@@ -82,8 +82,6 @@ const StudentDashboard = ({ user, onLogout }) => {
     { text: "Annoncement", icon: <BookIcon />, path: "/student/annonce" },
     { text: "Assignments", icon: <AssignmentIcon />, path: "/student/assignments" },
     { text: "Quizzes", icon: <QuizIcon />, path: "/student/quizzes" },
-    { text: "Calendar", icon: <CalendarMonth />, path: "/student/calendar" },
-    { text: "Discussion", icon: <Forum />, path: "/student/discussion" },
   ]
 
   const notifications = [
