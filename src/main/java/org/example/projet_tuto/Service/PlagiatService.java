@@ -1,70 +1,72 @@
 package org.example.projet_tuto.Service;
 
-import lombok.RequiredArgsConstructor;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import okhttp3.*;
 import org.example.projet_tuto.Repository.PlagiatRepository;
 import org.example.projet_tuto.Repository.SoumissionRepository;
 import org.example.projet_tuto.entities.Plagiat;
 import org.example.projet_tuto.entities.Soumission;
-import org.example.projet_tuto.utils.MultipartInputStreamFileResource;
-import org.springframework.core.io.ByteArrayResource;
-import org.springframework.http.*;
 import org.springframework.stereotype.Service;
-import org.springframework.util.LinkedMultiValueMap;
-import org.springframework.util.MultiValueMap;
-import org.springframework.web.client.RestTemplate;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
 import java.util.Map;
 
 @Service
-
 public class PlagiatService {
 
     private final SoumissionRepository soumissionRepository;
     private final PlagiatRepository plagiatRepository;
-    private final RestTemplate restTemplate;
+    private final OkHttpClient client;
+    private final ObjectMapper objectMapper;
 
     public PlagiatService(SoumissionRepository soumissionRepository,
-                          PlagiatRepository plagiatRepository,
-                          RestTemplate restTemplate) {
+                          PlagiatRepository plagiatRepository) {
         this.soumissionRepository = soumissionRepository;
         this.plagiatRepository = plagiatRepository;
-        this.restTemplate = restTemplate;
+        this.client = new OkHttpClient();
+        this.objectMapper = new ObjectMapper();
     }
 
     public void analyserEtSauvegarder(MultipartFile fichier, Soumission soumission) throws IOException {
-        HttpHeaders headers = new HttpHeaders();
-        headers.setContentType(MediaType.MULTIPART_FORM_DATA);
+        RequestBody fileBody = RequestBody.create(
+                fichier.getBytes(), MediaType.parse("application/pdf"));
 
-        // ✅ Utiliser la classe custom pour inclure le nom de fichier
+        MultipartBody requestBody = new MultipartBody.Builder()
+                .setType(MultipartBody.FORM)
+                .addFormDataPart("fichier", fichier.getOriginalFilename(), fileBody)
+                .build();
 
+        Request request = new Request.Builder()
+                .url("http://127.0.0.1:8000/api/plagiat/")
+                .post(requestBody)
+                .build();
 
-        MultipartInputStreamFileResource fileResource =
-                new MultipartInputStreamFileResource(fichier.getInputStream(), fichier.getOriginalFilename());
+        try (Response response = client.newCall(request).execute()) {
+            if (response.isSuccessful() && response.body() != null) {
+                String responseBody = response.body().string();
+                Map<String, Object> result = objectMapper.readValue(responseBody, Map.class);
 
-        MultiValueMap<String, Object> body = new LinkedMultiValueMap<>();
-        body.add("fichier", fileResource);
+                float score = result.containsKey("score") ? Float.parseFloat(result.get("score").toString()) : 0f;
+                String texte = result.containsKey("texte_similaire") ? result.get("texte_similaire").toString() : "";
+                String fichierSimilaire = result.containsKey("avec") ? result.get("avec").toString() : "Aucun";
 
+                System.out.println("✅ Score de plagiat = " + score + "%");
+                System.out.println("📄 Fichier similaire : " + fichierSimilaire);
+                System.out.println("📝 Texte similaire (début) : " + (texte.length() > 100 ? texte.substring(0, 100) + "..." : texte));
 
-        HttpEntity<MultiValueMap<String, Object>> requestEntity = new HttpEntity<>(body, headers);
+                soumission.setNomFichier(fichier.getOriginalFilename());
+                soumission.setTexte(texte);
+                soumissionRepository.save(soumission);
 
-        // Envoi de la requête vers Django
-        ResponseEntity<Map> response = restTemplate.postForEntity(
-                "http://127.0.0.1:8000/api/plagiat/",
-                requestEntity,
-                Map.class
-        );
+                Plagiat plagiat = new Plagiat();
+                plagiat.setScorePlagiat(score);
+                plagiat.setSoumission(soumission);
+                plagiatRepository.save(plagiat);
 
-        float score = Float.parseFloat(response.getBody().get("similarite").toString());
-
-        soumission.setNomFichier(fichier.getOriginalFilename());
-        soumission.setTexte(response.getBody().get("texte").toString());
-        soumissionRepository.save(soumission);
-
-        Plagiat p = new Plagiat();
-        p.setScorePlagiat(score);
-        p.setSoumission(soumission);
-        plagiatRepository.save(p);
+            } else {
+                throw new RuntimeException("❌ Échec de la requête Django : HTTP " + response.code());
+            }
+        }
     }
 }
