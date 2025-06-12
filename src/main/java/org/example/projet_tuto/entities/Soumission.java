@@ -3,6 +3,7 @@ package org.example.projet_tuto.entities;
 import jakarta.persistence.*;
 import lombok.*;
 
+import java.time.LocalDate;
 import java.util.Date;
 
 
@@ -17,7 +18,7 @@ public class Soumission {
     @Column(columnDefinition = "TEXT")
     private String texte;
 
-    private Date dateSoumission;
+    private LocalDate dateSoumission;
     private float note;
 
     @ManyToOne
@@ -39,7 +40,7 @@ public class Soumission {
     public void setTexte(String texte) {
         this.texte = texte;
     }
-    public void setDateSoumission(Date date) {
+    public void setDateSoumission(LocalDate date) {
         this.dateSoumission = date;
     }
 
@@ -47,5 +48,43 @@ public class Soumission {
         this.note = note;
     }
 
+    public Long getId() {
+        return id;
+    }
+
+    public String getNomFichier() {
+        return nomFichier;
+    }
+
+    public String getTexte() {
+        return texte;
+    }
+
+    public LocalDate getDateSoumission() {
+        return dateSoumission;
+    }
+
+    public float getNote() {
+        return note;
+    }
+
+    public Exercice getExercice() {
+        return exercice;
+    }
+
+    public Utilisateur getEtudiant() {
+        return etudiant;
+    }
+    public void setExercice(Exercice exercice) {
+        this.exercice = exercice;
+    }
+
+    public void setEtudiant(Utilisateur etudiant) {
+        this.etudiant = etudiant;
+    }
+
+
+    public void setDateSoumission(Date date) {
+    }
 }
 
