@@ -36,11 +36,8 @@ public class QcmController {
         this.utilisateurRepository = utilisateurRepository;
         this.jwtTokenProvider = jwtTokenProvider;
     }
-    @GetMapping("/qcms")
     @PreAuthorize("hasRole('PROFESSEUR')")
-    public ResponseEntity<?> getAllQcms(@RequestHeader("Authorization") String authHeader) {
         try {
-            log.info("Received request to get all QCMs");
 
             // Validate Authorization header
             if (authHeader == null || !authHeader.startsWith("Bearer ")) {
@@ -59,33 +56,6 @@ public class QcmController {
             log.info("Extracted email: {}", email);
 
             // Verify professor
-            Utilisateur professeur = utilisateurRepository.findByEmail(email);
-            if (professeur == null) {
-                log.warn("Utilisateur not found with email: {}", email);
-                return new ResponseEntity<>(Map.of("error", "Utilisateur not found"), HttpStatus.BAD_REQUEST);
-            }
-
-            // Get all QCMs for the professor
-            return new ResponseEntity<>(qcmService.getAllQcms(professeur.getId()), HttpStatus.OK);
-        } catch (Exception e) {
-            log.error("Failed to get QCMs: {}", e.getMessage(), e);
-            return new ResponseEntity<>(Map.of("error", e.getMessage()), HttpStatus.INTERNAL_SERVER_ERROR);
-        }
-    }
-    @PostMapping("/create")
-    @PreAuthorize("hasRole('PROFESSEUR')")
-    public ResponseEntity<?> createQcm(@Valid @RequestBody QCM qcm,
-                                       @RequestParam Long classeId,
-                                       @RequestHeader("Authorization") String authHeader) {
-        try {
-            log.info("Received request to create QCM with titre: {}", qcm.getTitre());
-
-            // Extract email from token
-            String token = authHeader.replace("Bearer ", "");
-            String email = jwtTokenProvider.getUsernameFromJWT(token);
-            log.info("Extracted email: {}", email);
-
-            // Retrieve professor
             Utilisateur professeur = utilisateurRepository.findByEmail(email);
             if (professeur == null) {
                 log.warn("Utilisateur not found with email: {}", email);
@@ -127,7 +97,6 @@ public class QcmController {
             return new ResponseEntity<>(Map.of("error", e.getMessage()), HttpStatus.BAD_REQUEST);
         } catch (Exception e) {
             log.error("Failed to create QCM: {}", e.getMessage(), e);
-            return new ResponseEntity<>(Map.of("error", "Internal server error"), HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
 
@@ -237,7 +206,6 @@ public class QcmController {
             }
 
             // Delete QCM
-            qcmService.deleteQCM(id, professeur.getId());
             log.info("Successfully deleted QCM with ID: {}", id);
 
             // Return success message

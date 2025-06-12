@@ -1,9 +1,5 @@
 package org.example.projet_tuto.Service;
 
-import jakarta.annotation.PreDestroy;
-import org.example.projet_tuto.DTOS.QCMDTO;
-import org.example.projet_tuto.DTOS.QuestionDTO;
-import org.example.projet_tuto.DTOS.ReponseDTO;
 import org.example.projet_tuto.entities.Classe;
 import org.example.projet_tuto.entities.QCM;
 import org.example.projet_tuto.entities.Question;
@@ -20,13 +16,8 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.List;
 import java.util.Optional;
 import java.util.Set;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
-import java.util.concurrent.TimeUnit;
-import java.util.stream.Collectors;
 
 @Service
 public class QcmService {
@@ -36,18 +27,12 @@ public class QcmService {
     private final QCMRespository qcmRepository;
     private final ClasseRepository classeRepository;
     private final UtilisateurRepository utilisateurRepository;
-    private final EmailService emailService;
-    private final ExecutorService executorService;
 
     public QcmService(QCMRespository qcmRepository,
                       ClasseRepository classeRepository,
-                      UtilisateurRepository utilisateurRepository,
-                      EmailService emailService) {
         this.qcmRepository = qcmRepository;
         this.classeRepository = classeRepository;
         this.utilisateurRepository = utilisateurRepository;
-        this.emailService = emailService;
-        this.executorService = Executors.newFixedThreadPool(2);
     }
 
     public Classe checkClasse(Long idClasse) throws ValidationException {
@@ -111,40 +96,8 @@ public class QcmService {
                 }
             }
         }
-        QCM qc = qcmRepository.save(qcm);
-        // Notify students about the new QCM
-        List<Utilisateur> students = utilisateurRepository.findByClasse(classe);
-        if (students != null) {
-            for (Utilisateur student : students) {
-                executorService.submit(() -> {
-                    emailService.sendEmail(
-                            student.getEmail(),
-                            "Notification: New QCM Available",
-                            "Dear " + student.getName() + ",\n\n" +
-                                    "We are pleased to inform you that a new QCM titled \"" + qc.getTitre() + "\" has been created and is now available on the platform.\n\n" +
-                                    "Please log in to the platform to review the QCM and complete it before the deadline. If you have any questions, feel free to reach out to your instructor.\n\n" +
-                                    "Best regards,\n" +
-                                    "The Academic Team"
-                    );
-                });
-            }
-        } else {
-            throw new ValidationException("Classe not found");
-        }
         // Save QCM (cascades to questions and responses)
-        return qc;
-    }
-    @PreDestroy
-    public void shutdown() {
-        executorService.shutdown();
-        try {
-            if (!executorService.awaitTermination(60, TimeUnit.SECONDS)) {
-                executorService.shutdownNow();
             }
-        } catch (InterruptedException e) {
-            executorService.shutdownNow();
-        }
-    }
     @Transactional
     public QCM updateQCM(QCM qcm, Long classeId, Long professeurId) throws ValidationException, QcmNotFoundException {
         log.info("Updating QCM with ID: {}, titre: {}, classeId: {}, professeurId: {}",
@@ -187,54 +140,11 @@ public class QcmService {
     }
 
     @Transactional
-    public void deleteQCM(Long id, Long professeurId) throws ValidationException, QcmNotFoundException {
-        log.info("Deleting QCM with ID: {}, classeId: {}, professeurId: {}", id, professeurId);
 
 
         QCM existing = qcmRepository.findById(id)
                 .orElseThrow(() -> new QcmNotFoundException("QCM not found with ID: " + id));
 
         qcmRepository.deleteById(id);
-    }
-
-    public Set<QCMDTO> getAllQcms(Long id) {
-        log.info("Fetching all QCMs for Professeur ID: {}", id);
-        return qcmRepository.findAll().stream().filter(qcm -> qcm.getProfesseur() != null && qcm.getProfesseur().getId().equals(id))
-                .map(qcm -> mapToQCMDTO(qcm))
-                .collect(Collectors.toSet());
-    }
-
-    private QCMDTO mapToQCMDTO(QCM qcm) {
-        return new QCMDTO(
-                qcm.getId(),
-                qcm.getTitre(),
-                qcm.getDateCreation(),
-                qcm.getClasse() != null ? qcm.getClasse().getId() : null,
-                qcm.getClasse() != null ? qcm.getClasse().getNom() : "toto",
-                qcm.getQuestions() != null ? qcm.getQuestions().stream()
-                        .map(this::mapToQuestionDTO)
-                        .collect(Collectors.toSet()) : null,
-                qcm.getProfesseur() != null ? qcm.getProfesseur().getName() : null
-        );
-    }
-
-    private QuestionDTO mapToQuestionDTO(Question question) {
-        return new QuestionDTO(
-                question.getId(),
-                question.getContenu(),
-                question.getNote(),
-                question.getReponses() != null ? question.getReponses().stream()
-                        .map(this::mapToReponseDTO)
-                        .collect(Collectors.toSet()) : null,
-                question.getQcm().getProfesseur().getName() != null ? question.getQcm().getProfesseur().getName() : null
-        );
-    }
-
-    private ReponseDTO mapToReponseDTO(Reponse reponse) {
-        return new ReponseDTO(
-                reponse.getId(),
-                reponse.getContenu(),
-                reponse.isCorrecte()
-        );
     }
 }

@@ -1,13 +1,11 @@
 package org.example.projet_tuto.Service;
 
-import jakarta.annotation.PreDestroy;
-import jakarta.transaction.Transactional;
-import org.example.projet_tuto.DTOS.AnnonceDTO;
 import org.example.projet_tuto.DTOS.ClassDTO;
 import org.example.projet_tuto.DTOS.UserDTO;
 import org.example.projet_tuto.Repository.AnnonceRepository;
 import org.example.projet_tuto.Repository.ClasseRepository;
 import org.example.projet_tuto.Repository.UtilisateurRepository;
+import org.example.projet_tuto.DTOS.AnnonceDTO;
 import org.example.projet_tuto.entities.Annonce;
 import org.example.projet_tuto.entities.Classe;
 import org.example.projet_tuto.entities.Utilisateur;
@@ -15,9 +13,6 @@ import org.springframework.stereotype.Service;
 
 import java.util.Collections;
 import java.util.List;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
-import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 
 @Service
@@ -25,53 +20,19 @@ public class ProfesseurService {
     private final AnnonceRepository annonceRepository;
     private final UtilisateurRepository userRepository;
     private final ClasseRepository classeRepository;
-    private final EmailService emailService;
-    private final ExecutorService executorService;
 
-    public ProfesseurService(AnnonceRepository annonceRepository, UtilisateurRepository userRepository,
-                             ClasseRepository classeRepository, EmailService emailService) {
+    public ProfesseurService(AnnonceRepository annonceRepository, UtilisateurRepository userRepository, ClasseRepository classeRepository) {
         this.annonceRepository = annonceRepository;
         this.userRepository = userRepository;
         this.classeRepository = classeRepository;
-        this.emailService = emailService;
-        // Initialize a fixed thread pool for email sending
-        this.executorService = Executors.newFixedThreadPool(2); // 2 threads for email tasks
     }
 
-    // ======= createAnnonces =======
+    // ======= createAnnonce =======
     public void createAnnonces(Annonce annonce, Long id_prof, Long id_classe) {
-        // Set the class and professor for the announcement
         annonce.setClasse(classeRepository.findById(id_classe).orElse(null));
         annonce.setProfesseur(userRepository.findById(id_prof).orElse(null));
-
-        // Save the announcement immediately
         annonceRepository.save(annonce);
-
-        // Asynchronously send emails to students
-        List<Utilisateur> students = userRepository.findByClasse(annonce.getClasse());
-        if (students != null && !students.isEmpty()) {
-            executorService.submit(() -> {
-                for (Utilisateur student : students) {
-                    String subject = "New Announcement: " + annonce.getTitre();
-                    String body = "Dear Student,\n\n" +
-                            "A new announcement has been posted:\n" +
-                            "Title: " + annonce.getTitre() + "\n" +
-                            "Description: " + annonce.getDescription() + "\n" +
-                            "Content: " + annonce.getContenu() + "\n\n" +
-                            "Best regards,\n" +
-                            (annonce.getProfesseur() != null ? annonce.getProfesseur().getName() : "Professor");
-                    try {
-                        emailService.sendEmail(student.getEmail(), subject, body);
-                    } catch (Exception e) {
-                        // Log the error to avoid thread termination silently
-                        System.err.println("Failed to send email to " + student.getEmail() + ": " + e.getMessage());
-                    }
-                }
-            });
-        }
     }
-
-
 
     // ======= getAnnoncesByProfId =======
     public List<AnnonceDTO> getAnnoncesByProfId(Long id_prof) {
@@ -216,9 +177,8 @@ public class ProfesseurService {
                 .collect(Collectors.toList());
     }
 
-    // ======= getClassesByProfId =======
-    public List<ClassDTO> getClassesByProfId() {
-        return classeRepository.findAll().stream()
+    public List<ClassDTO> getClassesByProfId(Long id_prof) {
+        return classeRepository.findAll().stream().filter(classe -> classe.getEnseignant() != null && classe.getEnseignant().getId().equals(id_prof))
                 .map(this::mapToClassDTO)
                 .collect(Collectors.toList());
     }
@@ -230,43 +190,17 @@ public class ProfesseurService {
 
         int studentCount = studentDTOs.size();
 
-        List<String> professorNames = classe.getEnseignants() != null
-                ? classe.getEnseignants().stream()
-                .map(enseignant -> enseignant.getName() + " " + enseignant.getPrenom())
-                .collect(Collectors.toList())
-                : Collections.singletonList("Not Assigned");
-
+        String professorName = classe.getEnseignant() != null
+                ? classe.getEnseignant().getName() + " " + classe.getEnseignant().getPrenom()
+                : "Not Assigned";
 
         return ClassDTO.builder()
                 .id(classe.getId())
                 .name(classe.getNom())
-                .professorName(professorNames)
+                .professorId(classe.getEnseignant() != null ? classe.getEnseignant().getId() : null)
+                .professorName(professorName)
                 .students(studentDTOs)
                 .studentCount(studentCount)
                 .build();
-    }
-    @PreDestroy
-    public void shutdown() {
-        executorService.shutdown();
-        try {
-            if (!executorService.awaitTermination(60, TimeUnit.SECONDS)) {
-                executorService.shutdownNow();
-            }
-        } catch (InterruptedException e) {
-            executorService.shutdownNow();
-        }
-    }
-    @Transactional
-    public List<ClassDTO> getClassesByProfesseurId(Long id) {
-        try {
-            return classeRepository.findAll().stream()
-                    .filter(classe -> classe.getEnseignants() != null && classe.getEnseignants().stream()
-                            .anyMatch(enseignant -> enseignant.getId().equals(id)))
-                    .map(this::mapToClassDTO)
-                    .collect(Collectors.toList());
-        } catch (Exception e) {
-            System.out.println("Error fetching classes for professeur ID: {}" + id);
-            throw new RuntimeException("Failed to fetch classes", e);
-        }
     }
 }
